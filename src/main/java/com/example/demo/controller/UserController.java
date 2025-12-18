@@ -1,7 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.UserAccount;
+import com.example.demo.entity.UserAccount;
 import com.example.demo.service.UserAccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,19 +11,16 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserAccountService service;
+    @Autowired
+    private UserAccountService service;
 
-    public UserController(UserAccountService service) {
-        this.service = service;
+    @PostMapping("/register")
+    public UserAccount register(@RequestBody UserAccount user){
+        return service.saveUser(user);
     }
 
     @GetMapping
-    public List<UserAccount> getAllUsers() {
+    public List<UserAccount> getAll(){
         return service.getAllUsers();
-    }
-
-    @PostMapping
-    public UserAccount createUser(@RequestBody UserAccount user) {
-        return service.createUser(user);
     }
 }
