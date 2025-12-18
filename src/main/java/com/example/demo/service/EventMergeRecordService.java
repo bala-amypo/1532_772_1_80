@@ -1,3 +1,8 @@
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+
 public interface EventMergeRecordService {
     EventMergeRecord create(EventMergeRecord e);
     List<EventMergeRecord> getAll();

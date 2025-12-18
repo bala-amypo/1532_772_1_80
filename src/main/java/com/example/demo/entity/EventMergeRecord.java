@@ -1,56 +1,38 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class EventMergeRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    private String sourceEvent;
-    private String mergedEvent;
-    private String status;
+    private Long id;
+    private String eventName;
+    private String eventDate;
+    private String eventLocation;
 
     public EventMergeRecord() {}
 
-    public EventMergeRecord(long id, String sourceEvent, String mergedEvent, String status) {
+    public EventMergeRecord(Long id, String eventName, String eventDate, String eventLocation) {
         this.id = id;
-        this.sourceEvent = sourceEvent;
-        this.mergedEvent = mergedEvent;
-        this.status = status;
+        this.eventName = eventName;
+        this.eventDate = eventDate;
+        this.eventLocation = eventLocation;
     }
 
-    public long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(long id) {
-        this.id = id;
-    }
+    public String getEventName() { return eventName; }
+    public void setEventName(String eventName) { this.eventName = eventName; }
 
-    public String getSourceEvent() {
-        return sourceEvent;
-    }
+    public String getEventDate() { return eventDate; }
+    public void setEventDate(String eventDate) { this.eventDate = eventDate; }
 
-    public void setSourceEvent(String sourceEvent) {
-        this.sourceEvent = sourceEvent;
-    }
-
-    public String getMergedEvent() {
-        return mergedEvent;
-    }
-
-    public void setMergedEvent(String mergedEvent) {
-        this.mergedEvent = mergedEvent;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public String getEventLocation() { return eventLocation; }
+    public void setEventLocation(String eventLocation) { this.eventLocation = eventLocation; }
 }
