@@ -1,8 +1,14 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+
 @Entity
 public class ClashRecord {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String eventA;
     private String eventB;
     private String clashReason;
@@ -16,5 +22,35 @@ public class ClashRecord {
         this.clashReason = clashReason;
     }
 
-    // Getters & Setters
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getEventA() {
+        return eventA;
+    }
+
+    public void setEventA(String eventA) {
+        this.eventA = eventA;
+    }
+
+    public String getEventB() {
+        return eventB;
+    }
+
+    public void setEventB(String eventB) {
+        this.eventB = eventB;
+    }
+
+    public String getClashReason() {
+        return clashReason;
+    }
+
+    public void setClashReason(String clashReason) {
+        this.clashReason = clashReason;
+    }
 }
