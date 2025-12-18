@@ -1,14 +1,12 @@
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
+package com.example.demo.service;
 
-import java.util.List;
 import com.example.demo.entity.EventMergeRecord;
-
+import java.util.List;
 
 public interface EventMergeRecordService {
-    EventMergeRecord create(EventMergeRecord e);
+    EventMergeRecord save(EventMergeRecord record);
     List<EventMergeRecord> getAll();
-    EventMergeRecord getById(long id);
-    EventMergeRecord update(long id, EventMergeRecord e);
-    String delete(long id);
+    EventMergeRecord getById(Long id);
+    EventMergeRecord update(Long id, EventMergeRecord record);
+    void delete(Long id);
 }

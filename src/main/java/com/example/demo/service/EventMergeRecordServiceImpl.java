@@ -1,19 +1,23 @@
+package com.example.demo.service;
 
+import com.example.demo.entity.EventMergeRecord;
+import com.example.demo.repository.EventMergeRecordRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class EventMergeRecordServiceImpl implements EventMergeRecordService {
 
-    @Autowired
-    private EventMergeRecordRepository repo;
+    private final EventMergeRecordRepository repo;
+
+    public EventMergeRecordServiceImpl(EventMergeRecordRepository repo) {
+        this.repo = repo;
+    }
 
     @Override
-    public EventMergeRecord create(EventMergeRecord e) {
-        return repo.save(e);
+    public EventMergeRecord save(EventMergeRecord record) {
+        return repo.save(record);
     }
 
     @Override
@@ -22,28 +26,18 @@ public class EventMergeRecordServiceImpl implements EventMergeRecordService {
     }
 
     @Override
-    public EventMergeRecord getById(long id) {
+    public EventMergeRecord getById(Long id) {
         return repo.findById(id).orElse(null);
     }
 
     @Override
-    public EventMergeRecord update(long id, EventMergeRecord e) {
-        EventMergeRecord exist = repo.findById(id).orElse(null);
-        if (exist != null) {
-            exist.setSourceEvent(e.getSourceEvent());
-            exist.setMergedEvent(e.getMergedEvent());
-            exist.setStatus(e.getStatus());
-            return repo.save(exist);
-        }
-        return null;
+    public EventMergeRecord update(Long id, EventMergeRecord record) {
+        record.setId(id);
+        return repo.save(record);
     }
 
     @Override
-    public String delete(long id) {
-        if(repo.existsById(id)) {
-            repo.deleteById(id);
-            return "Record Deleted";
-        }
-        return "Not Found";
+    public void delete(Long id) {
+        repo.deleteById(id);
     }
 }

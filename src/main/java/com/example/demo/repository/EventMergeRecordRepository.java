@@ -3,6 +3,6 @@ package com.example.demo.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.demo.entity.EventMergeRecord;
 
-public interface EventMergeRecordRepository extends JpaRepository<EventMergeRecord, Long> {
 
+public interface EventMergeRecordRepository extends JpaRepository<EventMergeRecord, Long> {
 }
