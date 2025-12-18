@@ -42,11 +42,7 @@
         </dependency>
 
         <!-- H2 Database (remove if using MySQL/PostgreSQL) -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+        
 
         <!-- JWT Optional -->
         <dependency>
