@@ -1,27 +1,27 @@
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import java.util.List;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
+package com.example.demo.service;
 
+import com.example.demo.model.UserAccount;
+import com.example.demo.repository.UserAccountRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
 
-    @Autowired
-    private UserAccountRepository repo;
+    private final UserAccountRepository repo;
 
-    @Override
-    public UserAccount register(UserAccount u) {
-        return repo.save(u);
+    public UserAccountServiceImpl(UserAccountRepository repo) {
+        this.repo = repo;
     }
 
     @Override
-    public String login(UserAccount u) {
-        UserAccount exist = repo.findByUsername(u.getUsername());
-        if(exist != null && exist.getPassword().equals(u.getPassword())) {
-            return "Login Success";
-        }
-        return "Invalid Username or Password";
+    public List<UserAccount> getAllUsers() {
+        return repo.findAll();
+    }
+
+    @Override
+    public UserAccount createUser(UserAccount user) {
+        return repo.save(user);
     }
 }
