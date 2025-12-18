@@ -43,6 +43,11 @@
 
         <!-- H2 Database (remove if using MySQL/PostgreSQL) -->
         
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <scope>runtime</scope>
+</dependency>
 
         <!-- JWT Optional -->
         <dependency>
