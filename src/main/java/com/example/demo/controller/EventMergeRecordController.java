@@ -1,43 +1,42 @@
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+package com.example.demo.controller;
 
-
-
+import com.example.demo.entity.EventMergeRecord;
+import com.example.demo.service.EventMergeRecordService;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
+@RequestMapping("/events")
 public class EventMergeRecordController {
 
-    @Autowired
-    private EventMergeRecordService service;
+    private final EventMergeRecordService service;
 
-    @PostMapping("/addmerge")
-    public EventMergeRecord add(@RequestBody EventMergeRecord e) {
-        return service.create(e);
+    public EventMergeRecordController(EventMergeRecordService service) {
+        this.service = service;
     }
 
-    @GetMapping("/showmerge")
-    public List<EventMergeRecord> get() {
+    @PostMapping
+    public EventMergeRecord save(@RequestBody EventMergeRecord r) {
+        return service.save(r);
+    }
+
+    @GetMapping
+    public List<EventMergeRecord> getAll() {
         return service.getAll();
     }
 
-    @GetMapping("/getmerge/{id}")
-    public EventMergeRecord getOne(@PathVariable long id) {
+    @GetMapping("/{id}")
+    public EventMergeRecord get(@PathVariable Long id) {
         return service.getById(id);
     }
 
-    @PutMapping("/updatemerge/{id}")
-    public EventMergeRecord update(@PathVariable long id, @RequestBody EventMergeRecord e) {
-        return service.update(id, e);
+    @PutMapping("/{id}")
+    public EventMergeRecord update(@PathVariable Long id, @RequestBody EventMergeRecord r) {
+        return service.update(id, r);
     }
 
-    @DeleteMapping("/deletemerge/{id}")
-    public String delete(@PathVariable long id) {
-        return service.delete(id);
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }
