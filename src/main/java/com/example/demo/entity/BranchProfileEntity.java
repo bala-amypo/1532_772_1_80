@@ -17,14 +17,10 @@ public class BranchProfileEntity {
     private String contactEmail;
     private boolean active;
     private LocalDateTime lastSyncAt;
-
     @PrePersist
     public void onCreate() {
         lastSyncAt = LocalDateTime.now();
     }
-
-    // getters/setters
-
     public Long getId() {
         return id;
     }
