@@ -1,9 +1,8 @@
 package com.example.demo.entity;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-import jakarta.persistence.*;
 
 @Entity
 @Table(name = "academic_events")
@@ -14,25 +13,20 @@ public class AcademicEvent {
     private Long id;
 
     private Long branchId;
-
     private String title;
-
     private String eventType;
-
     private LocalDate startDate;
     private LocalDate endDate;
-
     private String location;
-
     private String description;
-
     private LocalDateTime submittedAt;
 
     public AcademicEvent() {}
 
     public AcademicEvent(Long id, Long branchId, String title, String eventType,
                          LocalDate startDate, LocalDate endDate,
-                         String location, String description, LocalDateTime submittedAt) {
+                         String location, String description,
+                         LocalDateTime submittedAt) {
         this.id = id;
         this.branchId = branchId;
         this.title = title;
@@ -44,17 +38,16 @@ public class AcademicEvent {
         this.submittedAt = submittedAt;
     }
 
+    // ONLY ONE CALLBACK
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
+        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+            throw new RuntimeException("startDate cannot be after endDate");
+        }
         this.submittedAt = LocalDateTime.now();
     }
-    @PrePersist
-public void prePersist() {
-    submittedAt = LocalDateTime.now();
-}
 
-
-    // Getters & Setters
+    // getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -80,4 +73,5 @@ public void prePersist() {
     public void setDescription(String description) { this.description = description; }
 
     public LocalDateTime getSubmittedAt() { return submittedAt; }
+    public void setSubmittedAt(LocalDateTime submittedAt) { this.submittedAt = submittedAt; }
 }
