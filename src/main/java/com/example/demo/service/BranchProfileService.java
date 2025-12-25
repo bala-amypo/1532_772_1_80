@@ -1,13 +1,18 @@
 package com.example.demo.service;
-import java.util.List;
-
 
 import java.util.List;
-import com.example.demo.entity.BranchProfileEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import com.example.demo.entity.BranchProfile;
 
 public interface BranchProfileService {
-    BranchProfileEntity createBranch(BranchProfileEntity branch);
-    List<BranchProfileEntity> getAllBranches();
+
+    BranchProfile createBranch(BranchProfile branch);
+
+    BranchProfile updateBranchStatus(Long id, boolean active);
+
+    List<BranchProfile> getAllBranches();
+
+    BranchProfile getBranchById(Long id);
+
+    BranchProfile findByBranchCode(String branchCode);
 }

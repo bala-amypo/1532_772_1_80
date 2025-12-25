@@ -1,42 +1,42 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.EventMergeRecord;
-import com.example.demo.service.EventMergeRecordService;
-import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.entity.EventMergeRecord;
+import com.example.demo.service.EventMergeService;
+
 @RestController
-@RequestMapping("/events")
-public class EventMergeRecordController {
+@RequestMapping("/api/merge-records")
+public class EventMergeController {
 
-    private final EventMergeRecordService service;
+    private final EventMergeService mergeService;
 
-    public EventMergeRecordController(EventMergeRecordService service) {
-        this.service = service;
+    public EventMergeController(EventMergeService mergeService) {
+        this.mergeService = mergeService;
     }
 
     @PostMapping
-    public EventMergeRecord save(@RequestBody EventMergeRecord r) {
-        return service.save(r);
-    }
-
-    @GetMapping
-    public List<EventMergeRecord> getAll() {
-        return service.getAll();
+    public EventMergeRecord merge(@RequestParam List<Long> eventIds,
+                                  @RequestParam String reason) {
+        return mergeService.mergeEvents(eventIds, reason);
     }
 
     @GetMapping("/{id}")
     public EventMergeRecord get(@PathVariable Long id) {
-        return service.getById(id);
+        return mergeService.getMergeRecordById(id);
     }
 
-    @PutMapping("/{id}")
-    public EventMergeRecord update(@PathVariable Long id, @RequestBody EventMergeRecord r) {
-        return service.update(id, r);
+    @GetMapping
+    public List<EventMergeRecord> getAll() {
+        return mergeService.getAllMergeRecords();
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    @GetMapping("/range")
+    public List<EventMergeRecord> getByDate(@RequestParam LocalDate start,
+                                            @RequestParam LocalDate end) {
+        return mergeService.getMergeRecordsByDate(start, end);
     }
 }
