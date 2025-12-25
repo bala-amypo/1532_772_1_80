@@ -6,11 +6,13 @@ import com.example.demo.entity.UserAccount;
 
 public interface UserAccountService {
 
-    UserAccount register(UserAccount user);
+    // CREATE
+    UserAccount saveUser(UserAccount user);
 
-    UserAccount findByEmail(String email);
+    // READ
+    List<UserAccount> getAllUsers();
 
     UserAccount getUser(Long id);
 
-    List<UserAccount> getAllUsers();
+    UserAccount findByEmail(String email);
 }
