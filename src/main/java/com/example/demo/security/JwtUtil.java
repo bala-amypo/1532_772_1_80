@@ -1,30 +1,21 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.JwtException;
-
-import javax.crypto.SecretKey;
+import com.example.demo.entity.UserAccount;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import javax.crypto.SecretKey;
+import java.util.*;
 
 public class JwtUtil {
 
     private SecretKey secretKey;
-    private final long expirationMillis = 1000 * 60 * 60; // 1 hour
+    private final long EXPIRATION = 60 * 60 * 1000; // 1 hour
 
-    // REQUIRED by tests
+    // REQUIRED BY TEST
     public void initKey() {
         this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
-
-    /* -------------------------------------------------
-       TOKEN GENERATION
-    ------------------------------------------------- */
 
     public String generateToken(Long userId, String email, String role) {
         Map<String, Object> claims = new HashMap<>();
@@ -35,33 +26,29 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(secretKey)
                 .compact();
     }
 
-    // REQUIRED by tests
-    public String generateTokenForUser(com.example.demo.entity.UserAccount user) {
+    // REQUIRED BY TEST
+    public String generateTokenForUser(UserAccount user) {
         return generateToken(user.getId(), user.getEmail(), user.getRole());
     }
 
-    /* -------------------------------------------------
-       TOKEN PARSING
-    ------------------------------------------------- */
-
     public Claims parseToken(String token) {
         return Jwts.parser()
-                .setSigningKey(secretKey)   // ✅ OLD + STABLE API
+                .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    /* -------------------------------------------------
-       EXTRA HELPERS REQUIRED BY TESTS
-    ------------------------------------------------- */
+    public String extractEmail(String token) {
+        return parseToken(token).getSubject();
+    }
 
     public String extractUsername(String token) {
-        return parseToken(token).getSubject();
+        return extractEmail(token);
     }
 
     public Long extractUserId(String token) {
@@ -79,7 +66,7 @@ public class JwtUtil {
             Claims claims = parseToken(token);
             return claims.getSubject().equals(username)
                     && claims.getExpiration().after(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (Exception e) {
             return false;
         }
     }
