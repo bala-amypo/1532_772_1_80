@@ -41,7 +41,8 @@ public class UserController {
         user.setRole(request.getRole());
         user.setDepartment(request.getDepartment());
 
-        UserAccount savedUser = userService.saveUser(user);
+        UserAccount savedUser = userService.register(user);
+
         return ResponseEntity.ok(savedUser);
     }
 
