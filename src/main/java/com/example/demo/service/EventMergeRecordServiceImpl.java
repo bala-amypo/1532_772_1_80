@@ -1,43 +1,61 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
-import com.example.demo.entity.EventMergeRecord;
-import com.example.demo.repository.EventMergeRecordRepository;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.example.demo.entity.AcademicEvent;
+import com.example.demo.entity.EventMergeRecord;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.AcademicEventRepository;
+import com.example.demo.repository.EventMergeRecordRepository;
+import com.example.demo.service.EventMergeService;
 
 @Service
-public class EventMergeRecordServiceImpl implements EventMergeRecordService {
+public class EventMergeServiceImpl implements EventMergeService {
 
-    private final EventMergeRecordRepository repo;
+    private final EventMergeRecordRepository mergeRepo;
+    private final AcademicEventRepository eventRepo;
 
-    public EventMergeRecordServiceImpl(EventMergeRecordRepository repo) {
-        this.repo = repo;
+    public EventMergeServiceImpl(EventMergeRecordRepository mergeRepo,
+                                 AcademicEventRepository eventRepo) {
+        this.mergeRepo = mergeRepo;
+        this.eventRepo = eventRepo;
     }
 
     @Override
-    public EventMergeRecord save(EventMergeRecord record) {
-        return repo.save(record);
+    public EventMergeRecord mergeEvents(List<Long> eventIds, String reason) {
+
+        List<AcademicEvent> events = eventIds.stream()
+                .map(id -> eventRepo.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Event not found")))
+                .collect(Collectors.toList());
+
+        EventMergeRecord record = new EventMergeRecord();
+        record.setSourceEventIds(eventIds.toString());
+        record.setMergedTitle("Merged Event");
+        record.setMergedStartDate(events.get(0).getStartDate());
+        record.setMergedEndDate(events.get(events.size() - 1).getEndDate());
+        record.setMergeReason(reason);
+
+        return mergeRepo.save(record);
     }
 
     @Override
-    public List<EventMergeRecord> getAll() {
-        return repo.findAll();
+    public EventMergeRecord getMergeRecordById(Long id) {
+        return mergeRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Merge record not found"));
     }
 
     @Override
-    public EventMergeRecord getById(Long id) {
-        return repo.findById(id).orElse(null);
+    public List<EventMergeRecord> getAllMergeRecords() {
+        return mergeRepo.findAll();
     }
 
     @Override
-    public EventMergeRecord update(Long id, EventMergeRecord record) {
-        record.setId(id);
-        return repo.save(record);
-    }
-
-    @Override
-    public void delete(Long id) {
-        repo.deleteById(id);
+    public List<EventMergeRecord> getMergeRecordsByDate(LocalDate start, LocalDate end) {
+        return mergeRepo.findByMergedStartDateBetween(start, end);
     }
 }
