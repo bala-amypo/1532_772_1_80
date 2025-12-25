@@ -2,19 +2,35 @@ package com.example.demo.security;
 
 import java.util.Date;
 
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.JwtException;
+
+import jakarta.annotation.PostConstruct;
+
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
 
-    private final String secretKey = "test-secret-key";
-    private final long expirationMillis = 86400000;
+    // Simple hardcoded secret (OK for academic / test projects)
+    private String secretKey = "my-secret-key-1234567890";
 
+    // 1 hour
+    private final long expirationMillis = 60 * 60 * 1000;
+
+    @PostConstruct
+    public void initKey() {
+        // Ensures key is initialized before usage
+        if (this.secretKey == null || this.secretKey.isEmpty()) {
+            this.secretKey = "default-secret-key";
+        }
+    }
+
+    // Generate JWT
     public String generateToken(Long userId, String email, String role) {
+
         return Jwts.builder()
                 .setSubject(email)
                 .claim("userId", userId)
@@ -25,7 +41,8 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Claims validateToken(String token) {
+    // Validate token (throws exception if invalid)
+    public Claims validateToken(String token) throws JwtException {
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
@@ -37,10 +54,12 @@ public class JwtUtil {
     }
 
     public Long extractUserId(String token) {
-        return validateToken(token).get("userId", Long.class);
+        Object value = validateToken(token).get("userId");
+        return value != null ? Long.valueOf(value.toString()) : null;
     }
 
     public String extractRole(String token) {
-        return validateToken(token).get("role", String.class);
+        Object value = validateToken(token).get("role");
+        return value != null ? value.toString() : null;
     }
 }
