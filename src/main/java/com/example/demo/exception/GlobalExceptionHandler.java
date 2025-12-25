@@ -12,55 +12,45 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404 - Resource Not Found
+    // ---------------- 404 NOT FOUND ----------------
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourceNotFoundException ex) {
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(
+            ResourceNotFoundException ex) {
 
-        Map<String, Object> error = new LinkedHashMap<>();
-        error.put("timestamp", LocalDateTime.now());
-        error.put("status", HttpStatus.NOT_FOUND.value());
-        error.put("error", "Resource Not Found");
-        error.put("message", ex.getMessage());
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "Resource Not Found");
+        response.put("message", ex.getMessage());
 
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    // 400 - Validation Error
+    // ---------------- 400 VALIDATION ERROR ----------------
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Map<String, Object>> handleValidation(ValidationException ex) {
+    public ResponseEntity<Map<String, Object>> handleValidationException(
+            ValidationException ex) {
 
-        Map<String, Object> error = new LinkedHashMap<>();
-        error.put("timestamp", LocalDateTime.now());
-        error.put("status", HttpStatus.BAD_REQUEST.value());
-        error.put("error", "Validation Failed");
-        error.put("message", ex.getMessage());
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Validation Error");
+        response.put("message", ex.getMessage());
 
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // 403 - Unauthorized Access
-    @ExceptionHandler(UnauthorizedActionException.class)
-    public ResponseEntity<Map<String, Object>> handleUnauthorized(UnauthorizedActionException ex) {
-
-        Map<String, Object> error = new LinkedHashMap<>();
-        error.put("timestamp", LocalDateTime.now());
-        error.put("status", HttpStatus.FORBIDDEN.value());
-        error.put("error", "Unauthorized Action");
-        error.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
-    }
-
-    // 500 - Generic Exception
+    // ---------------- 500 GENERIC ERROR ----------------
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex) {
+    public ResponseEntity<Map<String, Object>> handleGenericException(
+            Exception ex) {
 
-        Map<String, Object> error = new LinkedHashMap<>();
-        error.put("timestamp", LocalDateTime.now());
-        error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        error.put("error", "Internal Server Error");
-        error.put("message", ex.getMessage());
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.put("error", "Internal Server Error");
+        response.put("message", ex.getMessage());
 
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
