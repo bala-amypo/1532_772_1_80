@@ -48,6 +48,11 @@ public class AcademicEvent {
     public void onCreate() {
         this.submittedAt = LocalDateTime.now();
     }
+    @PrePersist
+public void prePersist() {
+    submittedAt = LocalDateTime.now();
+}
+
 
     // Getters & Setters
     public Long getId() { return id; }

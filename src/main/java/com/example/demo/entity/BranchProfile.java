@@ -42,6 +42,12 @@ public class BranchProfile {
             this.active = true;
         }
     }
+    @PrePersist
+public void prePersist() {
+    if (active == null) active = true;
+    lastSyncAt = LocalDateTime.now();
+}
+
 
     // Getters & Setters
     public Long getId() { return id; }

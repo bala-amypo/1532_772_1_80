@@ -42,6 +42,15 @@ public class EventMergeRecord {
     public void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
+    @PrePersist
+public void prePersist() {
+    createdAt = LocalDateTime.now();
+}
+
+public void setId(long id) {
+    this.id = id;
+}
+
 
     // Getters & Setters
     public Long getId() { return id; }

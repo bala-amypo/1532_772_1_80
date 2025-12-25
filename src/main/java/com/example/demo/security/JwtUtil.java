@@ -12,13 +12,18 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private final long expirationMillis = 60 * 60 * 1000; // 1 hour
+    private SecretKey key;
+    private final long expirationMillis = 60 * 60 * 1000;
 
-    // ===================== TOKEN GENERATION =====================
+    // ===== REQUIRED BY TEST =====
+    public void initKey() {
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    }
 
-    // Required by controllers & tests
+    // ===== TOKEN GENERATION =====
     public String generateToken(Long userId, String email, String role) {
+        if (key == null) initKey();
+
         return Jwts.builder()
                 .setSubject(email)
                 .claim("userId", userId)
@@ -29,8 +34,9 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Required by tests (overloaded method)
     public String generateToken(Map<String, Object> claims, String subject) {
+        if (key == null) initKey();
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
@@ -40,44 +46,44 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Required by tests
     public String generateTokenForUser(UserAccount user) {
         return generateToken(user.getId(), user.getEmail(), user.getRole());
     }
 
-    // ===================== TOKEN PARSING =====================
-
-    // Required by tests
+    // ===== TOKEN PARSING =====
     public Claims parseToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
+        if (key == null) initKey();
+
+        return Jwts.parser()
+                .verifyWith(key)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload(); // <-- REQUIRED BY TEST
     }
 
-    // Required by tests
     public String extractUsername(String token) {
         return parseToken(token).getSubject();
     }
 
-    // Required by JwtAuthenticationFilter
     public String extractEmail(String token) {
-        return parseToken(token).getSubject();
+        return extractUsername(token);
     }
 
-    // Required by JwtAuthenticationFilter
     public String extractRole(String token) {
         Object role = parseToken(token).get("role");
         return role != null ? role.toString() : null;
     }
 
-    // Required by tests
-    public boolean isTokenValid(String token, String username) {
-        return extractUsername(token).equals(username) && !isTokenExpired(token);
+    // ===== REQUIRED BY TEST =====
+    public Long extractUserId(String token) {
+        Object id = parseToken(token).get("userId");
+        return id != null ? Long.parseLong(id.toString()) : null;
     }
 
-    // ===================== HELPERS =====================
+    public boolean isTokenValid(String token, String username) {
+        return extractUsername(token).equals(username)
+                && !isTokenExpired(token);
+    }
 
     private boolean isTokenExpired(String token) {
         return parseToken(token).getExpiration().before(new Date());
