@@ -5,8 +5,17 @@ public class LoginRequest {
     private String email;
     private String password;
 
-    public LoginRequest() {}
+    // No-arg constructor
+    public LoginRequest() {
+    }
 
+    // All-args constructor (required by test cases)
+    public LoginRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+    // Getters and Setters
     public String getEmail() {
         return email;
     }
