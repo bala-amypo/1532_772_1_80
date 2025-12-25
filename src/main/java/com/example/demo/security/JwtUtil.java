@@ -1,72 +1,50 @@
-package com.example.demo.security;
+@Entity
+@Table(name = "branch_profiles")
+public class BranchProfile {
 
-import com.example.demo.entity.UserAccount;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.Map;
+    private String branchCode;
+    private String branchName;
+    private String contactEmail;
+    private LocalDateTime lastSyncAt;
+    private Boolean active;
 
-public class JwtUtil {
+    public BranchProfile() {}
 
-    private SecretKey key;
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 hour
-
-    // REQUIRED by tests
-    public void initKey() {
-        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    public BranchProfile(Long id, String branchCode, String branchName,
+                         String contactEmail, LocalDateTime lastSyncAt, Boolean active) {
+        this.id = id;
+        this.branchCode = branchCode;
+        this.branchName = branchName;
+        this.contactEmail = contactEmail;
+        this.lastSyncAt = lastSyncAt;
+        this.active = active;
     }
 
-    // Used in tests
-    public String generateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(key)
-                .compact();
+    @PrePersist
+    public void prePersist() {
+        this.lastSyncAt = LocalDateTime.now();
+        if (this.active == null) this.active = true;
     }
 
-    // Used heavily in tests
-    public String generateTokenForUser(UserAccount user) {
-        return Jwts.builder()
-                .claim("userId", user.getId())
-                .claim("email", user.getEmail())
-                .claim("role", user.getRole())
-                .setSubject(user.getEmail())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(key)
-                .compact();
-    }
+    // getters/setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Claims parseToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
+    public String getBranchCode() { return branchCode; }
+    public void setBranchCode(String branchCode) { this.branchCode = branchCode; }
 
-    public String extractUsername(String token) {
-        return parseToken(token).getSubject();
-    }
+    public String getBranchName() { return branchName; }
+    public void setBranchName(String branchName) { this.branchName = branchName; }
 
-    public String extractEmail(String token) {
-        return parseToken(token).get("email", String.class);
-    }
+    public String getContactEmail() { return contactEmail; }
+    public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
 
-    public String extractRole(String token) {
-        return parseToken(token).get("role", String.class);
-    }
+    public LocalDateTime getLastSyncAt() { return lastSyncAt; }
 
-    public Long extractUserId(String token) {
-        return parseToken(token).get("userId", Long.class);
-    }
-
-    public boolean isTokenValid(String token, String email) {
-        return extractUsername(token).equals(email);
-    }
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 }
