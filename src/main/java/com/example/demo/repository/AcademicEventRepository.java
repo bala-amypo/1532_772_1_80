@@ -1,8 +1,17 @@
 package com.example.demo.repository;
-import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.demo.entity.AcademicEventEntity;
 
-public interface AcademicEventRepository extends JpaRepository<AcademicEventEntity, Long> {
+import com.example.demo.entity.AcademicEvent;
+
+public interface AcademicEventRepository extends JpaRepository<AcademicEvent, Long> {
+
+    List<AcademicEvent> findByBranchId(Long branchId);
+
+    List<AcademicEvent> findByEventType(String eventType);
+
+    List<AcademicEvent> findByStartDateBetween(LocalDate start, LocalDate end);
 }
