@@ -15,7 +15,9 @@ public class JwtUtil {
     private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private final long expirationMillis = 60 * 60 * 1000; // 1 hour
 
-    // ===== REQUIRED BY TEST =====
+    // ===================== TOKEN GENERATION =====================
+
+    // Required by controllers & tests
     public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
                 .setSubject(email)
@@ -27,7 +29,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ===== REQUIRED OVERLOAD =====
+    // Required by tests (overloaded method)
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -38,22 +40,14 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ===== REQUIRED BY TEST =====
+    // Required by tests
     public String generateTokenForUser(UserAccount user) {
         return generateToken(user.getId(), user.getEmail(), user.getRole());
     }
 
-    // ===== REQUIRED BY TEST =====
-    public String extractUsername(String token) {
-        return parseToken(token).getSubject();
-    }
+    // ===================== TOKEN PARSING =====================
 
-    // ===== REQUIRED BY TEST =====
-    public boolean isTokenValid(String token, String username) {
-        return extractUsername(token).equals(username) && !isTokenExpired(token);
-    }
-
-    // ===== REQUIRED BY TEST =====
+    // Required by tests
     public Claims parseToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -61,6 +55,29 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    // Required by tests
+    public String extractUsername(String token) {
+        return parseToken(token).getSubject();
+    }
+
+    // Required by JwtAuthenticationFilter
+    public String extractEmail(String token) {
+        return parseToken(token).getSubject();
+    }
+
+    // Required by JwtAuthenticationFilter
+    public String extractRole(String token) {
+        Object role = parseToken(token).get("role");
+        return role != null ? role.toString() : null;
+    }
+
+    // Required by tests
+    public boolean isTokenValid(String token, String username) {
+        return extractUsername(token).equals(username) && !isTokenExpired(token);
+    }
+
+    // ===================== HELPERS =====================
 
     private boolean isTokenExpired(String token) {
         return parseToken(token).getExpiration().before(new Date());
