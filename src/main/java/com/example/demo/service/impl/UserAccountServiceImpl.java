@@ -14,44 +14,47 @@ import com.example.demo.service.UserAccountService;
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
 
-    private final UserAccountRepository userRepository;
+    private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserAccountServiceImpl(UserAccountRepository userRepository,
+    // Constructor Injection (MANDATORY as per question)
+    public UserAccountServiceImpl(UserAccountRepository userAccountRepository,
                                   PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+        this.userAccountRepository = userAccountRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ---------------- CREATE ----------------
     @Override
-    public UserAccount saveUser(UserAccount user) {
+    public UserAccount register(UserAccount user) {
 
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new ValidationException("Email already exists");
+        if (userAccountRepository.existsByEmail(user.getEmail())) {
+            throw new ValidationException("Email already in use");
+        }
+
+        if (user.getRole() == null) {
+            user.setRole("REVIEWER");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
-    }
-
-    // ---------------- READ ----------------
-    @Override
-    public List<UserAccount> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public UserAccount getUser(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found with id: " + id));
+        return userAccountRepository.save(user);
     }
 
     @Override
     public UserAccount findByEmail(String email) {
-        return userRepository.findByEmail(email)
+        return userAccountRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found with email: " + email));
+                        new ResourceNotFoundException("User not found"));
+    }
+
+    @Override
+    public UserAccount getUser(Long id) {
+        return userAccountRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found"));
+    }
+
+    @Override
+    public List<UserAccount> getAllUsers() {
+        return userAccountRepository.findAll();
     }
 }
