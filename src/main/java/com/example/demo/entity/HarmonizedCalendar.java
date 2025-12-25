@@ -44,6 +44,15 @@ public class HarmonizedCalendar {
         this.generatedAt = LocalDateTime.now();
     }
 
+@PrePersist
+public void prePersist() {
+    generatedAt = LocalDateTime.now();
+}
+
+public void setId(long id) {
+    this.id = id;
+}
+
     // Getters & Setters
     public Long getId() { return id; }
 

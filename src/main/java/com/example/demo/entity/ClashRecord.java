@@ -46,6 +46,12 @@ public class ClashRecord {
             this.resolved = false;
         }
     }
+    @PrePersist
+public void prePersist() {
+    detectedAt = LocalDateTime.now();
+    if (resolved == null) resolved = false;
+}
+
 
     // Getters & Setters
     public Long getId() { return id; }

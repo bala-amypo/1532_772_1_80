@@ -38,6 +38,12 @@ public class UserAccount {
         this.createdAt = createdAt;
     }
 
+@PrePersist
+public void prePersist() {
+    createdAt = LocalDateTime.now();
+    if (role == null) role = "REVIEWER";
+}
+
     @PrePersist
     public void onCreate() {
         this.createdAt = LocalDateTime.now();
