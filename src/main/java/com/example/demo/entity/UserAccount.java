@@ -39,7 +39,7 @@ public class UserAccount {
     }
 
     @PrePersist
-    protected void onCreate() {
+    public void onCreate() {
         this.createdAt = LocalDateTime.now();
         if (this.role == null) {
             this.role = "REVIEWER";

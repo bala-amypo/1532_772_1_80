@@ -40,7 +40,7 @@ public class HarmonizedCalendar {
     }
 
     @PrePersist
-    protected void onCreate() {
+    public void onCreate() {
         this.generatedAt = LocalDateTime.now();
     }
 

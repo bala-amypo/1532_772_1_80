@@ -1,65 +1,68 @@
 package com.example.demo.security;
 
-import java.util.Date;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.JwtException;
-
-import jakarta.annotation.PostConstruct;
-
+import com.example.demo.entity.UserAccount;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
 
-    // Simple hardcoded secret (OK for academic / test projects)
-    private String secretKey = "my-secret-key-1234567890";
+    private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final long expirationMillis = 60 * 60 * 1000; // 1 hour
 
-    // 1 hour
-    private final long expirationMillis = 60 * 60 * 1000;
-
-    @PostConstruct
-    public void initKey() {
-        // Ensures key is initialized before usage
-        if (this.secretKey == null || this.secretKey.isEmpty()) {
-            this.secretKey = "default-secret-key";
-        }
-    }
-
-    // Generate JWT
+    // ===== REQUIRED BY TEST =====
     public String generateToken(Long userId, String email, String role) {
-
         return Jwts.builder()
                 .setSubject(email)
                 .claim("userId", userId)
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(key)
                 .compact();
     }
 
-    // Validate token (throws exception if invalid)
-    public Claims validateToken(String token) throws JwtException {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
+    // ===== REQUIRED OVERLOAD =====
+    public String generateToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
+                .signWith(key)
+                .compact();
+    }
+
+    // ===== REQUIRED BY TEST =====
+    public String generateTokenForUser(UserAccount user) {
+        return generateToken(user.getId(), user.getEmail(), user.getRole());
+    }
+
+    // ===== REQUIRED BY TEST =====
+    public String extractUsername(String token) {
+        return parseToken(token).getSubject();
+    }
+
+    // ===== REQUIRED BY TEST =====
+    public boolean isTokenValid(String token, String username) {
+        return extractUsername(token).equals(username) && !isTokenExpired(token);
+    }
+
+    // ===== REQUIRED BY TEST =====
+    public Claims parseToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    public String extractEmail(String token) {
-        return validateToken(token).getSubject();
-    }
-
-    public Long extractUserId(String token) {
-        Object value = validateToken(token).get("userId");
-        return value != null ? Long.valueOf(value.toString()) : null;
-    }
-
-    public String extractRole(String token) {
-        Object value = validateToken(token).get("role");
-        return value != null ? value.toString() : null;
+    private boolean isTokenExpired(String token) {
+        return parseToken(token).getExpiration().before(new Date());
     }
 }
