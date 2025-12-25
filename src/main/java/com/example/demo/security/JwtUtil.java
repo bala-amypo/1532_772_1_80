@@ -6,9 +6,8 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.Map;
 
-@Component   // ⭐⭐⭐ THIS IS THE FIX
+@Component
 public class JwtUtil {
 
     private final SecretKey key;
@@ -17,6 +16,7 @@ public class JwtUtil {
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
+    // 🔹 MAIN METHOD
     public String generateTokenForUser(Long userId, String email, String role) {
         return Jwts.builder()
                 .setSubject(email)
@@ -26,6 +26,11 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(key)
                 .compact();
+    }
+
+    // 🔹 ALIAS METHOD (THIS FIXES YOUR ERROR)
+    public String generateToken(Long userId, String email, String role) {
+        return generateTokenForUser(userId, email, role);
     }
 
     public String extractEmail(String token) {
