@@ -8,11 +8,11 @@ public class RegisterRequest {
     private String role;
     private String department;
 
-    // No-arg constructor (required by Spring)
+    // No-arg constructor (Spring + tests)
     public RegisterRequest() {
     }
 
-    // All-args constructor (required by test cases)
+    // All-args constructor (REQUIRED by tests)
     public RegisterRequest(String name, String email, String password,
                            String role, String department) {
         this.name = name;
@@ -22,7 +22,6 @@ public class RegisterRequest {
         this.department = department;
     }
 
-    // Getters and Setters
     public String getName() {
         return name;
     }

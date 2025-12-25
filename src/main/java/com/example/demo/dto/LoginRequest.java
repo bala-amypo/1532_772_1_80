@@ -9,13 +9,12 @@ public class LoginRequest {
     public LoginRequest() {
     }
 
-    // All-args constructor (required by test cases)
+    // All-args constructor (REQUIRED by tests)
     public LoginRequest(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    // Getters and Setters
     public String getEmail() {
         return email;
     }

@@ -1,33 +1,33 @@
-package com.example.demo.dto;
+// package com.example.demo.dto;
 
-import java.util.List;
+// import java.util.List;
 
-public class MergeEventsRequest {
+// public class MergeEventsRequest {
 
-    private List<Long> eventIds;
-    private String reason;
+//     private List<Long> eventIds;
+//     private String reason;
 
-    public MergeEventsRequest() {
-    }
+//     public MergeEventsRequest() {
+//     }
 
-    public MergeEventsRequest(List<Long> eventIds, String reason) {
-        this.eventIds = eventIds;
-        this.reason = reason;
-    }
+//     public MergeEventsRequest(List<Long> eventIds, String reason) {
+//         this.eventIds = eventIds;
+//         this.reason = reason;
+//     }
 
-    public List<Long> getEventIds() {
-        return eventIds;
-    }
+//     public List<Long> getEventIds() {
+//         return eventIds;
+//     }
 
-    public void setEventIds(List<Long> eventIds) {
-        this.eventIds = eventIds;
-    }
+//     public void setEventIds(List<Long> eventIds) {
+//         this.eventIds = eventIds;
+//     }
 
-    public String getReason() {
-        return reason;
-    }
+//     public String getReason() {
+//         return reason;
+//     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-}
+//     public void setReason(String reason) {
+//         this.reason = reason;
+//     }
+// }
