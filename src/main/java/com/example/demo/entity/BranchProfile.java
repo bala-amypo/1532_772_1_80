@@ -36,7 +36,7 @@ public class BranchProfile {
     }
 
     @PrePersist
-    protected void onCreate() {
+    public void onCreate() {
         this.lastSyncAt = LocalDateTime.now();
         if (this.active == null) {
             this.active = true;
