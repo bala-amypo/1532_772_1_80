@@ -1,16 +1,15 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.UserAccount;
+import java.util.List;
 
 public interface UserAccountService {
 
-    // already required by tests
     UserAccount register(UserAccount user);
 
-    UserAccount getUser(long id);
-
-    // required by AuthController
     UserAccount findByEmail(String email);
 
-    boolean matchesPassword(String rawPassword, String storedPassword);
+    UserAccount getUser(Long id);
+
+    List<UserAccount> getAllUsers();
 }
