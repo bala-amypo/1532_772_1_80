@@ -4,22 +4,19 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "branch_profiles")
+@Table(name = "branch_profiles", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "branchCode")
+})
 public class BranchProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
     private String branchCode;
-
     private String branchName;
-
     private String contactEmail;
-
     private LocalDateTime lastSyncAt;
-
     private Boolean active;
 
     public BranchProfile() {}
@@ -42,7 +39,7 @@ public class BranchProfile {
         }
     }
 
-    // Getters & Setters
+    // getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
