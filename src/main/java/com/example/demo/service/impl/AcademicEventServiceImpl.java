@@ -1,60 +1,18 @@
-package com.example.demo.service.impl;
+package com.example.demo.service;
 
 import com.example.demo.entity.AcademicEvent;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.exception.ValidationException;
-import com.example.demo.repository.AcademicEventRepository;
-import com.example.demo.service.AcademicEventService;
 
 import java.util.List;
 
-public class AcademicEventServiceImpl implements AcademicEventService {
+public interface AcademicEventService {
 
-    private final AcademicEventRepository academicEventRepository;
+    AcademicEvent createEvent(AcademicEvent event);
 
-    public AcademicEventServiceImpl(AcademicEventRepository academicEventRepository) {
-        this.academicEventRepository = academicEventRepository;
-    }
+    List<AcademicEvent> getEventsByBranch(Long branchId);
 
-    @Override
-    public AcademicEvent createEvent(AcademicEvent event) {
-        validateDates(event);
-        return academicEventRepository.save(event);
-    }
+    AcademicEvent updateEvent(Long id, AcademicEvent event);
 
-    @Override
-    public AcademicEvent updateEvent(Long id, AcademicEvent event) {
-        AcademicEvent existing = academicEventRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+    AcademicEvent getEventById(Long id);
 
-        validateDates(event);
-
-        existing.setStartDate(event.getStartDate());
-        existing.setEndDate(event.getEndDate());
-        existing.setEventType(event.getEventType());
-
-        return academicEventRepository.save(existing);
-    }
-
-    @Override
-    public AcademicEvent getEventById(Long id) {
-        return academicEventRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
-    }
-
-    @Override
-    public List<AcademicEvent> getEventsByBranch(Long branchId) {
-        return academicEventRepository.findByBranchId(branchId);
-    }
-
-    @Override
-    public List<AcademicEvent> getAllEvents() {
-        return academicEventRepository.findAll();
-    }
-
-    private void validateDates(AcademicEvent event) {
-        if (event.getStartDate().isAfter(event.getEndDate())) {
-            throw new ValidationException("startDate cannot be after endDate");
-        }
-    }
+    List<AcademicEvent> getAllEvents();
 }
