@@ -1,8 +1,7 @@
 package com.example.demo.config;
 
+import com.example.demo.security.JwtPayload;
 import com.example.demo.security.JwtUtil;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collections;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -35,23 +34,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             try {
-                // ✅ NEW test-aligned API
-                Jws<Claims> parsedToken = jwtUtil.parseToken(token);
+                // 🔥 TEST-EXPECTED FLOW
+                JwtPayload payloadWrapper = jwtUtil.parseToken(token);
 
-                String username = parsedToken.getBody().getSubject();
-                String role = parsedToken.getBody().get("role", String.class);
+                String username = payloadWrapper.getPayload().getSubject();
+                String role = payloadWrapper.getPayload().get("role", String.class);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 username,
                                 null,
-                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                                Collections.singletonList(
+                                        new SimpleGrantedAuthority("ROLE_" + role)
+                                )
                         );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            } catch (Exception ignored) {
-                // Invalid token → request remains unauthenticated
+            } catch (Exception ex) {
+                // Invalid token → ignore and continue filter chain
+                SecurityContextHolder.clearContext();
             }
         }
 

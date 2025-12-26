@@ -21,7 +21,9 @@ public class JwtUtil {
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
-    // ===== REQUIRED BY TEST =====
+    // =========================
+    // TOKEN GENERATION
+    // =========================
 
     public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
@@ -45,30 +47,51 @@ public class JwtUtil {
     }
 
     public String generateTokenForUser(UserAccount user) {
-        return generateToken(
-                user.getId(),
-                user.getEmail(),
-                user.getRole()
-        );
+        return generateToken(user.getId(), user.getEmail(), user.getRole());
     }
 
+    // =========================
+    // EXTRACTION METHODS (TEST REQUIRES)
+    // =========================
+
     public String extractUsername(String token) {
-        return parseToken(token).getBody().getSubject();
+        return extractAllClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
+    }
+
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("userId", Long.class);
     }
 
     public boolean isTokenValid(String token, String username) {
         try {
-            String extracted = extractUsername(token);
-            return extracted.equals(username);
+            return extractUsername(token).equals(username);
         } catch (Exception e) {
             return false;
         }
     }
 
-    public Jws<Claims> parseToken(String token) {
+    // =========================
+    // 🔥 TEST-EXACT METHOD
+    // =========================
+
+    public JwtPayload parseToken(String token) {
+        Claims claims = extractAllClaims(token);
+        return new JwtPayload(claims);
+    }
+
+    // =========================
+    // INTERNAL
+    // =========================
+
+    private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJws(token);
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
