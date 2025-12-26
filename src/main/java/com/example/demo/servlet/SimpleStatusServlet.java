@@ -17,6 +17,7 @@ public class SimpleStatusServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
 
-        response.getWriter().write("{\"status\":\"UP\"}");
+        response.writer.write("Servlet Alive");
+
     }
 }
