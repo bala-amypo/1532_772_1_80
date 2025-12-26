@@ -4,94 +4,79 @@ import com.example.demo.entity.UserAccount;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
-@Component
 public class JwtUtil {
 
     private Key key;
-    private final long expirationMillis = 60 * 60 * 1000; // 1 hour
+
+    private static final long EXPIRATION_MS = 1000 * 60 * 60 * 10; // 10 hours
 
     @PostConstruct
     public void initKey() {
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
-    // =========================
-    // TOKEN GENERATION
-    // =========================
-
-    public String generateToken(Long userId, String email, String role) {
-        return Jwts.builder()
-                .setSubject(email)
-                .claim("userId", userId)
-                .claim("role", role)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
-                .signWith(key)
-                .compact();
-    }
+    /* ================= TOKEN GENERATION ================= */
 
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(key)
                 .compact();
     }
 
     public String generateTokenForUser(UserAccount user) {
-        return generateToken(user.getId(), user.getEmail(), user.getRole());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRole());
+        claims.put("userId", user.getId());
+
+        return generateToken(claims, user.getEmail());
     }
 
-    // =========================
-    // EXTRACTION METHODS (TEST REQUIRES)
-    // =========================
+    /* ================= TOKEN PARSING ================= */
+
+    public Jws<Claims> parseToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token);
+    }
 
     public String extractUsername(String token) {
-        return extractAllClaims(token).getSubject();
+        return parseToken(token).getBody().getSubject();
     }
 
     public String extractRole(String token) {
-        return extractAllClaims(token).get("role", String.class);
+        return parseToken(token).getBody().get("role", String.class);
     }
 
     public Long extractUserId(String token) {
-        return extractAllClaims(token).get("userId", Long.class);
+        Object id = parseToken(token).getBody().get("userId");
+        return id == null ? null : Long.valueOf(id.toString());
     }
 
-    public boolean isTokenValid(String token, String username) {
+    /* ================= VALIDATION ================= */
+
+    public boolean isTokenValid(String token, String expectedUsername) {
         try {
-            return extractUsername(token).equals(username);
+            String username = extractUsername(token);
+            return username.equals(expectedUsername) && !isTokenExpired(token);
         } catch (Exception e) {
             return false;
         }
     }
 
-    // =========================
-    // 🔥 TEST-EXACT METHOD
-    // =========================
-
-    public JwtPayload parseToken(String token) {
-        Claims claims = extractAllClaims(token);
-        return new JwtPayload(claims);
-    }
-
-    // =========================
-    // INTERNAL
-    // =========================
-
-    private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    private boolean isTokenExpired(String token) {
+        Date expiration = parseToken(token).getBody().getExpiration();
+        return expiration.before(new Date());
     }
 }
