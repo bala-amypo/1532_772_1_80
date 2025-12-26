@@ -19,10 +19,10 @@ public class HarmonizedCalendarController {
     }
 
     @PostMapping("/generate")
-    public HarmonizedCalendar generate(@RequestBody Map<String, String> body) {
+    public HarmonizedCalendar generate(@RequestBody Map<String, String> request) {
         return harmonizedCalendarService.generateHarmonizedCalendar(
-                body.get("title"),
-                body.get("generatedBy")
+                request.get("title"),
+                request.get("generatedBy")
         );
     }
 

@@ -19,12 +19,14 @@ public class EventMergeController {
     }
 
     @PostMapping
-    public EventMergeRecord merge(@RequestBody Map<String, Object> body) {
-        @SuppressWarnings("unchecked")
-        List<Integer> ids = (List<Integer>) body.get("eventIds");
-        String reason = (String) body.get("reason");
+    public EventMergeRecord merge(@RequestBody Map<String, Object> request) {
+        List<Integer> ids = (List<Integer>) request.get("eventIds");
+        String reason = (String) request.get("reason");
 
-        List<Long> eventIds = ids.stream().map(Long::valueOf).toList();
+        List<Long> eventIds = ids.stream()
+                .map(Long::valueOf)
+                .toList();
+
         return eventMergeService.mergeEvents(eventIds, reason);
     }
 

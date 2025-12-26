@@ -8,7 +8,6 @@ import com.example.demo.service.UserAccountService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -35,28 +34,32 @@ public class AuthController {
         user.setPassword(request.getPassword());
         user.setRole(request.getRole());
         user.setDepartment(request.getDepartment());
-
         return userAccountService.register(user);
     }
 
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody LoginRequest request) {
+
         UserAccount user = userAccountService.findByEmail(request.getEmail());
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
 
-        String token = jwtUtil.generateTokenForUser(user);
+        String token = jwtUtil.generateToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole()
+        );
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", token);
-        response.put("user", user);
-        return response;
+        return Map.of(
+                "token", token,
+                "user", user
+        );
     }
 
     @GetMapping("/users")
-    public java.util.List<UserAccount> getAllUsers() {
+    public Iterable<UserAccount> getAllUsers() {
         return userAccountService.getAllUsers();
     }
 

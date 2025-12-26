@@ -17,7 +17,7 @@ public class BranchProfileController {
     }
 
     @PostMapping
-    public BranchProfile createBranch(@RequestBody BranchProfile branch) {
+    public BranchProfile create(@RequestBody BranchProfile branch) {
         return branchProfileService.createBranch(branch);
     }
 

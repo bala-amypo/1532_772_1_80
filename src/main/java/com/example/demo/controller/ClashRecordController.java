@@ -17,7 +17,7 @@ public class ClashRecordController {
     }
 
     @PostMapping
-    public ClashRecord create(@RequestBody ClashRecord clash) {
+    public ClashRecord log(@RequestBody ClashRecord clash) {
         return clashDetectionService.logClash(clash);
     }
 
@@ -27,12 +27,12 @@ public class ClashRecordController {
     }
 
     @GetMapping("/event/{eventId}")
-    public List<ClashRecord> getByEvent(@PathVariable Long eventId) {
+    public List<ClashRecord> getForEvent(@PathVariable Long eventId) {
         return clashDetectionService.getClashesForEvent(eventId);
     }
 
     @GetMapping("/unresolved")
-    public List<ClashRecord> unresolved() {
+    public List<ClashRecord> getUnresolved() {
         return clashDetectionService.getUnresolvedClashes();
     }
 
