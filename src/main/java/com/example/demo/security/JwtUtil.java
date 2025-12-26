@@ -3,31 +3,31 @@ package com.example.demo.security;
 import com.example.demo.entity.UserAccount;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component   // ⭐ THIS IS THE KEY FIX
 public class JwtUtil {
 
-    private SecretKey secretKey;
-    private long expirationMillis = 3600000; // 1 hour
-
-    public JwtUtil() {
-        initKey();
-    }
-
-    public JwtUtil(String secretKey, long expirationMillis) {
-        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
-        this.expirationMillis = expirationMillis;
-    }
+    private SecretKey key;
+    private final long expirationMillis = 1000 * 60 * 60; // 1 hour
 
     public void initKey() {
-        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
-    // ---------- GENERATE ----------
+    private SecretKey getKey() {
+        if (key == null) {
+            initKey();
+        }
+        return key;
+    }
+
+    // ---- Required by tests ----
 
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
@@ -35,52 +35,44 @@ public class JwtUtil {
                 .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
-                .signWith(secretKey)
+                .signWith(getKey())
                 .compact();
     }
 
-    public String generateToken(Long userId, String email, String role) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
-        claims.put("email", email);
-        claims.put("role", role);
-        return generateToken(claims, email);
-    }
-
     public String generateTokenForUser(UserAccount user) {
-        return generateToken(user.getId(), user.getEmail(), user.getRole());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRole());
+        return generateToken(claims, user.getEmail());
     }
 
-    // ---------- PARSE ----------
-
-    public Jws<Claims> parseToken(String token) {
+    public Claims parseToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+                .setSigningKey(getKey())
                 .build()
-                .parseClaimsJws(token);
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public String extractUsername(String token) {
-        return parseToken(token).getBody().getSubject();
+        return parseToken(token).getSubject();
     }
 
     public String extractEmail(String token) {
-        return parseToken(token).getBody().get("email", String.class);
+        return parseToken(token).get("email", String.class);
     }
 
     public Long extractUserId(String token) {
-        return parseToken(token).getBody().get("userId", Long.class);
+        return parseToken(token).get("userId", Long.class);
     }
 
     public String extractRole(String token) {
-        return parseToken(token).getBody().get("role", String.class);
+        return parseToken(token).get("role", String.class);
     }
 
     public boolean isTokenValid(String token, String username) {
-        try {
-            return extractUsername(token).equals(username);
-        } catch (Exception e) {
-            return false;
-        }
+        return extractUsername(token).equals(username)
+                && parseToken(token).getExpiration().after(new Date());
     }
 }
