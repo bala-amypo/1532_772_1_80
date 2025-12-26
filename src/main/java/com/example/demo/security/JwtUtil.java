@@ -1,7 +1,10 @@
 package com.example.demo.security;
 
 import com.example.demo.entity.UserAccount;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 
@@ -21,8 +24,6 @@ public class JwtUtil {
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
-    /* ================= TOKEN GENERATION ================= */
-
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -38,11 +39,8 @@ public class JwtUtil {
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
         claims.put("userId", user.getId());
-
         return generateToken(claims, user.getEmail());
     }
-
-    /* ================= TOKEN PARSING ================= */
 
     public Jws<Claims> parseToken(String token) {
         return Jwts.parserBuilder()
@@ -64,19 +62,16 @@ public class JwtUtil {
         return id == null ? null : Long.valueOf(id.toString());
     }
 
-    /* ================= VALIDATION ================= */
-
     public boolean isTokenValid(String token, String expectedUsername) {
         try {
-            String username = extractUsername(token);
-            return username.equals(expectedUsername) && !isTokenExpired(token);
+            return extractUsername(token).equals(expectedUsername)
+                    && !isTokenExpired(token);
         } catch (Exception e) {
             return false;
         }
     }
 
     private boolean isTokenExpired(String token) {
-        Date expiration = parseToken(token).getBody().getExpiration();
-        return expiration.before(new Date());
+        return parseToken(token).getBody().getExpiration().before(new Date());
     }
 }
