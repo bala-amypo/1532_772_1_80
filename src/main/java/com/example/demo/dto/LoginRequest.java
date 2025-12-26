@@ -5,11 +5,8 @@ public class LoginRequest {
     private String email;
     private String password;
 
-    // No-arg constructor
-    public LoginRequest() {
-    }
+    public LoginRequest() {}
 
-    // All-args constructor (REQUIRED by tests)
     public LoginRequest(String email, String password) {
         this.email = email;
         this.password = password;

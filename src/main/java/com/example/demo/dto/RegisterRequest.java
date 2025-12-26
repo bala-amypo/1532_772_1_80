@@ -8,13 +8,9 @@ public class RegisterRequest {
     private String role;
     private String department;
 
-    // No-arg constructor (Spring + tests)
-    public RegisterRequest() {
-    }
+    public RegisterRequest() {}
 
-    // All-args constructor (REQUIRED by tests)
-    public RegisterRequest(String name, String email, String password,
-                           String role, String department) {
+    public RegisterRequest(String name, String email, String password, String role, String department) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -33,7 +29,7 @@ public class RegisterRequest {
     public String getEmail() {
         return email;
     }
-    
+
     public void setEmail(String email) {
         this.email = email;
     }

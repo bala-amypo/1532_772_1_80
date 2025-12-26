@@ -3,36 +3,39 @@ package com.example.demo.security;
 import com.example.demo.entity.UserAccount;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
 public class JwtUtil {
 
-    private SecretKey key;
-    private static final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private SecretKey secretKey;
+    private long expirationMillis = 3600000; // 1 hour
 
     public JwtUtil() {
         initKey();
     }
 
-    public void initKey() {
-        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    public JwtUtil(String secretKey, long expirationMillis) {
+        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.expirationMillis = expirationMillis;
     }
 
-    // -------- TOKEN GENERATION --------
+    public void initKey() {
+        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    }
+
+    // ---------- GENERATE ----------
 
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(key)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
+                .signWith(secretKey)
                 .compact();
     }
 
@@ -48,11 +51,11 @@ public class JwtUtil {
         return generateToken(user.getId(), user.getEmail(), user.getRole());
     }
 
-    // -------- TOKEN PARSING --------
+    // ---------- PARSE ----------
 
     public Jws<Claims> parseToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token);
     }
@@ -62,7 +65,7 @@ public class JwtUtil {
     }
 
     public String extractEmail(String token) {
-        return extractUsername(token);
+        return parseToken(token).getBody().get("email", String.class);
     }
 
     public Long extractUserId(String token) {
