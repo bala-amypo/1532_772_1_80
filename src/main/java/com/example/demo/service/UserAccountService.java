@@ -8,9 +8,10 @@ public interface UserAccountService {
 
     UserAccount register(UserAccount user);
 
-    UserAccount findByEmail(String email);
-
     UserAccount getUser(Long id);
 
+    UserAccount getUserByEmail(String email);
+
+    // 🔥 REQUIRED BY CONTROLLER
     List<UserAccount> getAllUsers();
 }
