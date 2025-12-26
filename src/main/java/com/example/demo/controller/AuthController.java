@@ -5,66 +5,61 @@ import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final UserAccountService userAccountService;
+    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
 
     public AuthController(UserAccountService userAccountService,
-                          JwtUtil jwtUtil,
-                          PasswordEncoder passwordEncoder) {
+                          AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
+        this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/register")
-    public UserAccount register(@RequestBody RegisterRequest request) {
-        UserAccount user = new UserAccount();
-        user.setFullName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        user.setRole(request.getRole());
-        user.setDepartment(request.getDepartment());
-        return userAccountService.register(user);
+    public ResponseEntity<UserAccount> register(@RequestBody RegisterRequest request) {
+
+        UserAccount user = new UserAccount(
+                null,
+                request.getName(),
+                request.getEmail(),
+                request.getPassword(),
+                request.getRole(),
+                request.getDepartment(),
+                null
+        );
+
+        UserAccount created = userAccountService.register(user);
+        return ResponseEntity.ok(created);
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
 
-        UserAccount user = userAccountService.findByEmail(request.getEmail());
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
-        }
-
-        String token = jwtUtil.generateToken(
-                user.getId(),
-                user.getEmail(),
-                user.getRole()
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
         );
 
-        return Map.of(
-                "token", token,
-                "user", user
-        );
-    }
+        UserAccount user = userAccountService.getUserByEmail(request.getEmail());
 
-    @GetMapping("/users")
-    public Iterable<UserAccount> getAllUsers() {
-        return userAccountService.getAllUsers();
-    }
+        // ✅ CORRECT TOKEN GENERATION
+        String token = jwtUtil.generateTokenForUser(user);
 
-    @GetMapping("/users/{id}")
-    public UserAccount getUser(@PathVariable Long id) {
-        return userAccountService.getUser(id);
+        return ResponseEntity.ok(Map.of("token", token));
     }
 }
