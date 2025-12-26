@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -21,20 +20,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserAccount request) {
+    public String login(@RequestBody Map<String, String> body) {
 
-        UserAccount user = userService.findByEmail(request.getEmail());
+        String email = body.get("email");
+        String password = body.get("password");
 
-        if (!userService.matchesPassword(request.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(401).body("Invalid credentials");
+        UserAccount user = userService.findByEmail(email);
+
+        if (user == null || !userService.matchesPassword(password, user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
         }
 
-        String token = jwtUtil.generateToken(
-                user.getId(),
-                user.getEmail(),
-                user.getRole()
-        );
-
-        return ResponseEntity.ok(Map.of("token", token));
+        return jwtUtil.generateToken(Map.of("email", email), email);
     }
 }
