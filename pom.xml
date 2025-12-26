@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="
-           http://maven.apache.org/POM/4.0.0
-           http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -80,7 +79,7 @@
 
         <!-- ================= TEST ================= -->
 
-        <!-- Spring Test (JUnit excluded intentionally) -->
+        <!-- Spring Test WITHOUT JUnit -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -89,6 +88,10 @@
                 <exclusion>
                     <groupId>org.junit.jupiter</groupId>
                     <artifactId>junit-jupiter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -120,7 +123,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-      
+            <!-- FORCE TESTNG (DISABLE JUNIT PLATFORM) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -128,13 +131,15 @@
                 <configuration>
                     <useModulePath>false</useModulePath>
 
-                    <!-- Pick TestNG test classes -->
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
 
-                    <!-- Force TestNG instead of JUnit -->
-                    <testNGArtifactName>org.testng:testng</testNGArtifactName>
+                    <providers>
+                        <provider>
+                            <name>testng</name>
+                        </provider>
+                    </providers>
                 </configuration>
             </plugin>
 
