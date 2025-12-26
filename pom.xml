@@ -80,6 +80,7 @@
 
         <!-- ================= TEST ================= -->
 
+        <!-- Spring Test (JUnit excluded intentionally) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -100,7 +101,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Mockito (ONLY THIS) -->
+        <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -113,17 +114,27 @@
     <build>
         <plugins>
 
+            <!-- Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
+            <!-- 🔥 FIX: FORCE TESTNG -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
                     <useModulePath>false</useModulePath>
+
+                    <!-- Pick TestNG test classes -->
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+
+                    <!-- Force TestNG instead of JUnit -->
+                    <testNGArtifactName>org.testng:testng</testNGArtifactName>
                 </configuration>
             </plugin>
 
