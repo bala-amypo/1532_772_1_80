@@ -9,15 +9,13 @@ import java.io.IOException;
 public class SimpleStatusServlet extends HttpServlet {
 
     @Override
-    public void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws ServletException, IOException {
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws IOException {
 
-        response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_OK);
+    response.setStatus(HttpServletResponse.SC_OK);
 
-        response.writer.write("Servlet Alive");
+    PrintWriter writer = response.getWriter();
+    writer.write("Servlet Alive");
+}
 
-    }
 }
