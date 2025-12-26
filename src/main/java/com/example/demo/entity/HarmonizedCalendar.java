@@ -1,43 +1,86 @@
 package com.example.demo.entity;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "harmonized_calendars")
 public class HarmonizedCalendar {
 
-    private long id;
-    private String branch;
-    private String academicYear;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+    private String generatedBy;
+
+    @Column(columnDefinition = "TEXT")
+    private String eventsJson;
+
     private LocalDateTime generatedAt;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String status;
 
     public HarmonizedCalendar() {}
 
-    // REQUIRED constructor
-    public HarmonizedCalendar(long id,
-                              String branch,
-                              String academicYear,
+    public HarmonizedCalendar(Long id, String title, String generatedBy,
                               LocalDateTime generatedAt,
-                              LocalDate startDate,
-                              LocalDate endDate,
-                              String status) {
+                              LocalDate startDate, LocalDate endDate,
+                              String eventsJson) {
         this.id = id;
-        this.branch = branch;
-        this.academicYear = academicYear;
+        this.title = title;
+        this.generatedBy = generatedBy;
         this.generatedAt = generatedAt;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.status = status;
+        this.eventsJson = eventsJson;
     }
 
-    // getters
-    public long getId() { return id; }
-    public String getBranch() { return branch; }
-    public String getAcademicYear() { return academicYear; }
-    public LocalDateTime getGeneratedAt() { return generatedAt; }
-    public LocalDate getStartDate() { return startDate; }
-    public LocalDate getEndDate() { return endDate; }
-    public String getStatus() { return status; }
+    @PrePersist
+    public void onCreate() {
+        this.generatedAt = LocalDateTime.now();
+    }
+
+    // ===== Getters & Setters =====
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getGeneratedBy() {
+        return generatedBy;
+    }
+
+    public void setGeneratedBy(String generatedBy) {
+        this.generatedBy = generatedBy;
+    }
+
+    public String getEventsJson() {
+        return eventsJson;
+    }
+
+    public void setEventsJson(String eventsJson) {
+        this.eventsJson = eventsJson;
+    }
+
+    public LocalDateTime getGeneratedAt() {
+        return generatedAt;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
 }

@@ -1,43 +1,90 @@
 package com.example.demo.entity;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "event_merge_records")
 public class EventMergeRecord {
 
-    private long id;
-    private String sourceBranch;
-    private String targetBranch;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private String status;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String sourceEventIds;
+    private String mergedTitle;
+    private LocalDate mergedStartDate;
+    private LocalDate mergedEndDate;
+    private String mergeReason;
     private LocalDateTime mergedAt;
 
     public EventMergeRecord() {}
 
-    // REQUIRED constructor
-    public EventMergeRecord(long id,
-                            String sourceBranch,
-                            String targetBranch,
-                            LocalDate startDate,
-                            LocalDate endDate,
-                            String status,
-                            LocalDateTime mergedAt) {
+    public EventMergeRecord(Long id, String sourceEventIds, String mergedTitle,
+                            LocalDate mergedStartDate, LocalDate mergedEndDate,
+                            String mergeReason, LocalDateTime mergedAt) {
         this.id = id;
-        this.sourceBranch = sourceBranch;
-        this.targetBranch = targetBranch;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.status = status;
+        this.sourceEventIds = sourceEventIds;
+        this.mergedTitle = mergedTitle;
+        this.mergedStartDate = mergedStartDate;
+        this.mergedEndDate = mergedEndDate;
+        this.mergeReason = mergeReason;
         this.mergedAt = mergedAt;
     }
 
-    // getters
-    public long getId() { return id; }
-    public String getSourceBranch() { return sourceBranch; }
-    public String getTargetBranch() { return targetBranch; }
-    public LocalDate getStartDate() { return startDate; }
-    public LocalDate getEndDate() { return endDate; }
-    public String getStatus() { return status; }
-    public LocalDateTime getMergedAt() { return mergedAt; }
+    @PrePersist
+    public void onCreate() {
+        this.mergedAt = LocalDateTime.now();
+    }
+
+    // ===== Getters & Setters =====
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getSourceEventIds() {
+        return sourceEventIds;
+    }
+
+    public void setSourceEventIds(String sourceEventIds) {
+        this.sourceEventIds = sourceEventIds;
+    }
+
+    public String getMergedTitle() {
+        return mergedTitle;
+    }
+
+    public void setMergedTitle(String mergedTitle) {
+        this.mergedTitle = mergedTitle;
+    }
+
+    public LocalDate getMergedStartDate() {
+        return mergedStartDate;
+    }
+
+    public void setMergedStartDate(LocalDate mergedStartDate) {
+        this.mergedStartDate = mergedStartDate;
+    }
+
+    public LocalDate getMergedEndDate() {
+        return mergedEndDate;
+    }
+
+    public void setMergedEndDate(LocalDate mergedEndDate) {
+        this.mergedEndDate = mergedEndDate;
+    }
+
+    public String getMergeReason() {
+        return mergeReason;
+    }
+
+    public void setMergeReason(String mergeReason) {
+        this.mergeReason = mergeReason;
+    }
+
+    public LocalDateTime getMergedAt() {
+        return mergedAt;
+    }
 }
