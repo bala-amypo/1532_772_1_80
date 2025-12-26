@@ -1,78 +1,78 @@
 package com.example.demo.security;
 
-import com.example.demo.entity.UserAccount;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
-import javax.crypto.SecretKey;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-@Component
 public class JwtUtil {
 
-    private SecretKey key;
-    private final long expirationMillis = 1000 * 60 * 60;
+    private String secretKey = "secret-key-for-tests";
+    private long expirationMs = 1000 * 60 * 60; // 1 hour
 
-    public void initKey() {
-        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    }
-
-    private SecretKey getKey() {
-        if (key == null) initKey();
-        return key;
-    }
-
+    /* =========================
+       GENERATE TOKEN (GENERIC)
+       ========================= */
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
-                .signWith(getKey())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    // 🔥 REQUIRED BY AuthController
-    public String generateToken(Long userId, String email, String role) {
+    /* =========================
+       GENERATE TOKEN FOR USER
+       ========================= */
+    public String generateTokenForUser(com.example.demo.entity.UserAccount user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
-        claims.put("email", email);
-        claims.put("role", role);
-        return generateToken(claims, email);
+        claims.put("userId", user.getId());
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRole());
+
+        return generateToken(claims, user.getEmail());
     }
 
-    // 🔥 REQUIRED BY TESTS
-    public String generateTokenForUser(UserAccount user) {
-        return generateToken(user.getId(), user.getEmail(), user.getRole());
-    }
-
+    /* =========================
+       PARSE TOKEN
+       ========================= */
     public Claims parseToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getKey())
-                .build()
+        return Jwts.parser()
+                .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
     }
 
+    /* =========================
+       EXTRACTORS
+       ========================= */
     public String extractUsername(String token) {
         return parseToken(token).getSubject();
     }
 
-    public String extractEmail(String token) {
-        return parseToken(token).get("email", String.class);
+    public String extractRole(String token) {
+        return (String) parseToken(token).get("role");
     }
 
     public Long extractUserId(String token) {
-        return parseToken(token).get("userId", Long.class);
+        Object id = parseToken(token).get("userId");
+        return id == null ? null : Long.valueOf(id.toString());
     }
 
-    public String extractRole(String token) {
-        return parseToken(token).get("role", String.class);
+    /* =========================
+       VALIDATION
+       ========================= */
+    public boolean isTokenValid(String token, String email) {
+        return extractUsername(token).equals(email)
+                && !isTokenExpired(token);
     }
 
-    public boolean isTokenValid(String token, String username) {
-        return extractUsername(token).equals(username)
-                && parseToken(token).getExpiration().after(new Date());
+    private boolean isTokenExpired(String token) {
+        return parseToken(token).getExpiration().before(new Date());
     }
 }
