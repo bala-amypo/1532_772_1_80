@@ -33,27 +33,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             try {
-                // ✅ Extract values directly from JwtUtil
-                String username = jwtUtil.extractUsername(token);
-                String role = jwtUtil.extractRole(token);
+                JwtUtil.JwtPayload payload = jwtUtil.parseToken(token);
 
-                if (username != null && role != null &&
-                        SecurityContextHolder.getContext().getAuthentication() == null) {
+                String username = payload.getPayload().getSubject();
+                String role = payload.getPayload().get("role", String.class);
 
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    username,
-                                    null,
-                                    Collections.singletonList(
-                                            new SimpleGrantedAuthority("ROLE_" + role)
-                                    )
-                            );
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                username,
+                                null,
+                                Collections.singletonList(
+                                        new SimpleGrantedAuthority("ROLE_" + role)
+                                )
+                        );
 
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (Exception ex) {
-                // Invalid token → clear context and continue
                 SecurityContextHolder.clearContext();
             }
         }
