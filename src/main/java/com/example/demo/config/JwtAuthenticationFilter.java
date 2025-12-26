@@ -1,8 +1,7 @@
 package com.example.demo.config;
 
 import com.example.demo.security.JwtUtil;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,18 +20,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
+
             try {
-                String email = jwtUtil.extractEmail(token);
+                String email = jwtUtil.extractUsername(token);
                 String role = jwtUtil.extractRole(token);
 
                 UsernamePasswordAuthenticationToken auth =

@@ -6,28 +6,22 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-@Component   // ⭐ THIS IS THE KEY FIX
+@Component
 public class JwtUtil {
 
     private SecretKey key;
-    private final long expirationMillis = 1000 * 60 * 60; // 1 hour
+    private final long expirationMillis = 1000 * 60 * 60;
 
     public void initKey() {
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
     private SecretKey getKey() {
-        if (key == null) {
-            initKey();
-        }
+        if (key == null) initKey();
         return key;
     }
-
-    // ---- Required by tests ----
 
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
@@ -39,12 +33,18 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String generateTokenForUser(UserAccount user) {
+    // 🔥 REQUIRED BY AuthController
+    public String generateToken(Long userId, String email, String role) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", user.getId());
-        claims.put("email", user.getEmail());
-        claims.put("role", user.getRole());
-        return generateToken(claims, user.getEmail());
+        claims.put("userId", userId);
+        claims.put("email", email);
+        claims.put("role", role);
+        return generateToken(claims, email);
+    }
+
+    // 🔥 REQUIRED BY TESTS
+    public String generateTokenForUser(UserAccount user) {
+        return generateToken(user.getId(), user.getEmail(), user.getRole());
     }
 
     public Claims parseToken(String token) {
