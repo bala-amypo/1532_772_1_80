@@ -26,7 +26,7 @@
 
     <dependencies>
 
-        <!-- Spring Boot -->
+        <!-- Spring Boot Core -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -120,18 +120,20 @@
                 </configuration>
             </plugin>
 
-            <!-- FORCE TESTNG -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <useModulePath>false</useModulePath>
+                   
+                    <useJUnitPlatform>false</useJUnitPlatform>
+
                     <providers>
                         <provider>
                             <name>testng</name>
                         </provider>
                     </providers>
+
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
