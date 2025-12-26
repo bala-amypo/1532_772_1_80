@@ -26,7 +26,7 @@
 
     <dependencies>
 
-        <!-- Spring Boot Core -->
+        <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -69,13 +69,14 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Swagger / OpenAPI for Spring Boot 3 -->
-<dependency>
-    <groupId>org.springdoc</groupId>
-    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-    <version>2.5.0</version>
-</dependency>
+        <!-- OpenAPI / Swagger -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.5.0</version>
+        </dependency>
 
+        <!-- Spring Boot Test (JUnit excluded) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -88,7 +89,7 @@
             </exclusions>
         </dependency>
 
-        <!-- ✅ TESTNG -->
+        <!-- TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -119,14 +120,18 @@
                 </configuration>
             </plugin>
 
-            <!-- ✅ FORCE TESTNG -->
+            <!-- FORCE TESTNG -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
                     <useModulePath>false</useModulePath>
-                    <provider>testng</provider>
+                    <providers>
+                        <provider>
+                            <name>testng</name>
+                        </provider>
+                    </providers>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
