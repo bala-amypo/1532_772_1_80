@@ -1,38 +1,29 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.UserAccount;
-import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.service.UserAccountService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
 
-    private final UserAccountRepository repository;
-    private final PasswordEncoder passwordEncoder;
+    private final Map<Long, UserAccount> store = new HashMap<>();
+    private final AtomicLong idGen = new AtomicLong(1);
 
-    public UserAccountServiceImpl(UserAccountRepository repository,
-                                  PasswordEncoder passwordEncoder) {
-        this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
+    @Override
+    public UserAccount register(UserAccount user) {
+        long id = idGen.getAndIncrement();
+        user.setId(id);
+        store.put(id, user);
+        return user;
     }
 
     @Override
-    public UserAccount findByEmail(String email) {
-        return repository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
-
-    @Override
-    public UserAccount save(UserAccount user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return repository.save(user);
-    }
-
-    // ✅ THIS FIXES YOUR ERROR
-    @Override
-    public boolean matchesPassword(String rawPassword, String encodedPassword) {
-        return passwordEncoder.matches(rawPassword, encodedPassword);
+    public UserAccount getUser(long id) {
+        return store.get(id);
     }
 }
