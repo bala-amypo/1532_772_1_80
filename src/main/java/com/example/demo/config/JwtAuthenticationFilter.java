@@ -1,6 +1,8 @@
 package com.example.demo.config;
 
 import com.example.demo.security.JwtUtil;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,12 +35,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             try {
-                String email = jwtUtil.extractEmail(token);
-                String role = jwtUtil.extractRole(token);
+                // ✅ NEW test-aligned API
+                Jws<Claims> parsedToken = jwtUtil.parseToken(token);
+
+                String username = parsedToken.getBody().getSubject();
+                String role = parsedToken.getBody().get("role", String.class);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                email,
+                                username,
                                 null,
                                 List.of(new SimpleGrantedAuthority("ROLE_" + role))
                         );
