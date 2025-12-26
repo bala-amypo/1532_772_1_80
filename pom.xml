@@ -96,12 +96,12 @@
         </dependency>
 
         <!-- TestNG -->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
-            <scope>test</scope>
-        </dependency>
+       <dependency>
+    <groupId>org.testng</groupId>
+    <artifactId>testng</artifactId>
+    <version>7.9.0</version>
+    <scope>test</scope>
+</dependency>
 
         <!-- Mockito -->
         <dependency>
@@ -114,28 +114,34 @@
     </dependencies>
 
     <build>
-        <plugins>
+    <plugins>
 
-            <!-- Spring Boot Plugin -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
+        <!-- Compiler -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.13.0</version>
+            <configuration>
+                <release>17</release>
+            </configuration>
+        </plugin>
 
-            <!-- TestNG Surefire Configuration -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
-                <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
-                    <useModulePath>false</useModulePath>
-                </configuration>
-            </plugin>
+        <!-- Surefire with TestNG -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.2.5</version>
+            <configuration>
+                <useModulePath>false</useModulePath>
+                <testNGArtifactName>org.testng:testng</testNGArtifactName>
+                <includes>
+                    <include>**/*Test.java</include>
+                </includes>
+            </configuration>
+        </plugin>
 
-        </plugins>
-    </build>
+    </plugins>
+</build>
+
 
 </project>
