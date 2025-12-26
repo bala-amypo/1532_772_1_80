@@ -7,18 +7,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- ===============================
-         Project Info
-    =============================== -->
     <groupId>com.example</groupId>
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Multi-Branch Academic Calendar Harmonizer</name>
-    <description>Spring Boot Project with JWT, Swagger, TestNG</description>
 
-    <!-- ===============================
-         Spring Boot Parent
-    =============================== -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -26,9 +19,6 @@
         <relativePath/>
     </parent>
 
-    <!-- ===============================
-         Java Version
-    =============================== -->
     <properties>
         <java.version>17</java.version>
         <jjwt.version>0.11.5</jjwt.version>
@@ -37,43 +27,32 @@
         <mockito.version>5.11.0</mockito.version>
     </properties>
 
-    <!-- ===============================
-         Dependencies
-    =============================== -->
     <dependencies>
 
-        <!-- Spring Boot Core -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
-        <!-- Spring Web -->
+        <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- H2 Database (SAFE for tests) -->
+        <!-- H2 -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- JWT (JJWT) -->
+        <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -92,34 +71,20 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Swagger / OpenAPI -->
+        <!-- Swagger -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
 
-        <!-- Servlet API (Jakarta) -->
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
+        <!-- ================= TEST ================= -->
 
-        <!-- ===============================
-             TEST DEPENDENCIES
-        =============================== -->
-
-        <!-- Spring Boot Test (EXCLUDES JUnit) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
             <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.junit.jupiter</groupId>
                     <artifactId>junit-jupiter</artifactId>
@@ -135,7 +100,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Mockito -->
+        <!-- Mockito (ONLY THIS) -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -143,36 +108,21 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-testng</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
-    <!-- ===============================
-         Build Configuration
-    =============================== -->
     <build>
         <plugins>
 
-            <!-- Spring Boot Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- Maven Surefire (TestNG) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <includes>
-                        <include>**/*Test.java</include>
-                    </includes>
                     <useModulePath>false</useModulePath>
                 </configuration>
             </plugin>
