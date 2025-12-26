@@ -33,25 +33,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             try {
-                // 🔥 TEST-EXPECTED FLOW
-                JwtPayload payloadWrapper = jwtUtil.parseToken(token);
+                // ✅ Extract values directly from JwtUtil
+                String username = jwtUtil.extractUsername(token);
+                String role = jwtUtil.extractRole(token);
 
-                String username = payloadWrapper.getPayload().getSubject();
-                String role = payloadWrapper.getPayload().get("role", String.class);
+                if (username != null && role != null &&
+                        SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                                Collections.singletonList(
-                                        new SimpleGrantedAuthority("ROLE_" + role)
-                                )
-                        );
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    username,
+                                    null,
+                                    Collections.singletonList(
+                                            new SimpleGrantedAuthority("ROLE_" + role)
+                                    )
+                            );
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
 
             } catch (Exception ex) {
-                // Invalid token → ignore and continue filter chain
+                // Invalid token → clear context and continue
                 SecurityContextHolder.clearContext();
             }
         }
