@@ -1,86 +1,43 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "harmonized_calendars")
 public class HarmonizedCalendar {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String title;
-    private String generatedBy;
-
+    private long id;
+    private String branch;
+    private String academicYear;
     private LocalDateTime generatedAt;
-
-    private LocalDate effectiveFrom;
-    private LocalDate effectiveTo;
-
-    @Column(columnDefinition = "TEXT")
-    private String eventsJson;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private String status;
 
     public HarmonizedCalendar() {}
 
-    @PrePersist
-    public void prePersist() {
-        this.generatedAt = LocalDateTime.now();
-    }
-
-    // -------- getters & setters --------
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
+    // REQUIRED constructor
+    public HarmonizedCalendar(long id,
+                              String branch,
+                              String academicYear,
+                              LocalDateTime generatedAt,
+                              LocalDate startDate,
+                              LocalDate endDate,
+                              String status) {
         this.id = id;
+        this.branch = branch;
+        this.academicYear = academicYear;
+        this.generatedAt = generatedAt;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = status;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getGeneratedBy() {
-        return generatedBy;
-    }
-
-    public void setGeneratedBy(String generatedBy) {
-        this.generatedBy = generatedBy;
-    }
-
-    public LocalDateTime getGeneratedAt() {
-        return generatedAt;
-    }
-
-    public LocalDate getEffectiveFrom() {
-        return effectiveFrom;
-    }
-
-    public void setEffectiveFrom(LocalDate effectiveFrom) {
-        this.effectiveFrom = effectiveFrom;
-    }
-
-    public LocalDate getEffectiveTo() {
-        return effectiveTo;
-    }
-
-    public void setEffectiveTo(LocalDate effectiveTo) {
-        this.effectiveTo = effectiveTo;
-    }
-
-    public String getEventsJson() {
-        return eventsJson;
-    }
-
-    public void setEventsJson(String eventsJson) {
-        this.eventsJson = eventsJson;
-    }
+    // getters
+    public long getId() { return id; }
+    public String getBranch() { return branch; }
+    public String getAcademicYear() { return academicYear; }
+    public LocalDateTime getGeneratedAt() { return generatedAt; }
+    public LocalDate getStartDate() { return startDate; }
+    public LocalDate getEndDate() { return endDate; }
+    public String getStatus() { return status; }
 }
