@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,23 +21,37 @@ public class EventMergeController {
 
     /**
      * Merge events across branches
+     * Expected JSON:
+     * {
+     *   "eventIds": [1, 2, 3],
+     *   "mergeReason": "Overlapping schedules"
+     * }
      */
     @PostMapping("/merge")
-    public ResponseEntity<Map<String, Object>> mergeEvents(
+    public ResponseEntity<String> mergeEvents(
             @RequestBody Map<String, Object> request) {
 
-        Map<String, Object> response =
-                eventMergeService.mergeEvents(request);
+        // Extract eventIds
+        List<?> rawIds = (List<?>) request.get("eventIds");
+        List<Long> eventIds = new ArrayList<>();
+        for (Object id : rawIds) {
+            eventIds.add(Long.valueOf(id.toString()));
+        }
 
-        return ResponseEntity.ok(response);
+        // Extract merge reason
+        String mergeReason = request.get("mergeReason").toString();
+
+        // Call service with CORRECT signature
+        eventMergeService.mergeEvents(eventIds, mergeReason);
+
+        return new ResponseEntity<>("Events merged successfully", HttpStatus.OK);
     }
 
     /**
-     * Health/status endpoint (used by tests)
+     * Health check endpoint
      */
     @GetMapping("/status")
     public ResponseEntity<String> status() {
-        return new ResponseEntity<>("Event Merge Service is running",
-                HttpStatus.OK);
+        return new ResponseEntity<>("Event Merge Service is running", HttpStatus.OK);
     }
 }
