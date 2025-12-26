@@ -9,54 +9,58 @@ import com.example.demo.service.EventMergeService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EventMergeServiceImpl implements EventMergeService {
 
-    private final AcademicEventRepository academicEventRepository;
     private final EventMergeRecordRepository eventMergeRecordRepository;
+    private final AcademicEventRepository academicEventRepository;
 
-    public EventMergeServiceImpl(AcademicEventRepository academicEventRepository,
-                                 EventMergeRecordRepository eventMergeRecordRepository) {
-        this.academicEventRepository = academicEventRepository;
+    public EventMergeServiceImpl(EventMergeRecordRepository eventMergeRecordRepository,
+                                 AcademicEventRepository academicEventRepository) {
         this.eventMergeRecordRepository = eventMergeRecordRepository;
+        this.academicEventRepository = academicEventRepository;
     }
 
     @Override
     public EventMergeRecord mergeEvents(List<Long> eventIds, String reason) {
 
-        if (eventIds == null || eventIds.isEmpty()) {
-            throw new ResourceNotFoundException("No events found to merge");
-        }
-
-        List<AcademicEvent> events = academicEventRepository.findAllById(eventIds);
-
-        if (events.isEmpty()) {
-            throw new ResourceNotFoundException("No events found to merge");
-        }
-
-        LocalDate start = events.stream()
-                .map(AcademicEvent::getStartDate)
-                .min(LocalDate::compareTo)
-                .orElse(LocalDate.now());
-
-        LocalDate end = events.stream()
-                .map(AcademicEvent::getEndDate)
-                .max(LocalDate::compareTo)
-                .orElse(LocalDate.now());
+        List<AcademicEvent> events = eventIds.stream()
+                .map(id -> academicEventRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Event not found")))
+                .collect(Collectors.toList());
 
         EventMergeRecord record = new EventMergeRecord();
         record.setSourceEventIds(
-                eventIds.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("")
+                eventIds.stream().map(String::valueOf).collect(Collectors.joining(","))
         );
         record.setMergedTitle("Merged Events");
-        record.setMergedStartDate(start);
-        record.setMergedEndDate(end);
+        record.setMergedStartDate(
+                events.stream().map(AcademicEvent::getStartDate).min(LocalDate::compareTo).orElse(null)
+        );
+        record.setMergedEndDate(
+                events.stream().map(AcademicEvent::getEndDate).max(LocalDate::compareTo).orElse(null)
+        );
         record.setMergeReason(reason);
-        record.setCreatedAt(LocalDateTime.now());
 
         return eventMergeRecordRepository.save(record);
+    }
+
+    @Override
+    public List<EventMergeRecord> getAllMergeRecords() {
+        return eventMergeRecordRepository.findAll();
+    }
+
+    @Override
+    public EventMergeRecord getMergeRecordById(Long id) {
+        return eventMergeRecordRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Merge record not found"));
+    }
+
+    @Override
+    public List<EventMergeRecord> getMergeRecordsByDate(LocalDate start, LocalDate end) {
+        return eventMergeRecordRepository.findByMergedStartDateBetween(start, end);
     }
 }

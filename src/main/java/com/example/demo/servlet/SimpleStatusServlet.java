@@ -3,13 +3,20 @@ package com.example.demo.servlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 
 public class SimpleStatusServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setStatus(200);
-        resp.getWriter().write("Servlet Alive");
+    public void doGet(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws ServletException, IOException {
+
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_OK);
+
+        response.getWriter().write("{\"status\":\"UP\"}");
     }
 }
