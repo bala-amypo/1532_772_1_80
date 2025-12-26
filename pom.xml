@@ -77,7 +77,7 @@
         </dependency>
 
         <!-- Spring Boot Test (JUnit excluded) -->
-      <dependency>
+      <!-- <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-test</artifactId>
     <scope>test</scope>
@@ -91,6 +91,32 @@
             <artifactId>junit-platform-launcher</artifactId>
         </exclusion>
     </exclusions>
+</dependency> -->
+
+
+
+<!-- TestNG -->
+<dependency>
+    <groupId>org.testng</groupId>
+    <artifactId>testng</artifactId>
+    <version>7.9.0</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- Mockito -->
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>5.11.0</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- Mockito + TestNG integration -->
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-testng</artifactId>
+    <version>0.5.0</version>
+    <scope>test</scope>
 </dependency>
 
 
