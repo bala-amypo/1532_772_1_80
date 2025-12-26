@@ -1,43 +1,44 @@
 package com.example.demo.controller;
 
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.entity.AcademicEvent;
 import com.example.demo.service.AcademicEventService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
 public class AcademicEventController {
 
-    private final AcademicEventService eventService;
+    private final AcademicEventService academicEventService;
 
-    public AcademicEventController(AcademicEventService eventService) {
-        this.eventService = eventService;
+    public AcademicEventController(AcademicEventService academicEventService) {
+        this.academicEventService = academicEventService;
     }
 
     @PostMapping
     public AcademicEvent create(@RequestBody AcademicEvent event) {
-        return eventService.createEvent(event);
+        return academicEventService.createEvent(event);
     }
 
     @PutMapping("/{id}")
     public AcademicEvent update(@PathVariable Long id,
                                 @RequestBody AcademicEvent event) {
-        return eventService.updateEvent(id, event);
-    }
-
-    @GetMapping("/{id}")
-    public AcademicEvent get(@PathVariable Long id) {
-        return eventService.getEventById(id);
+        return academicEventService.updateEvent(id, event);
     }
 
     @GetMapping("/branch/{branchId}")
-    public java.util.List<AcademicEvent> getByBranch(@PathVariable Long branchId) {
-        return eventService.getEventsByBranch(branchId);
+    public List<AcademicEvent> getByBranch(@PathVariable Long branchId) {
+        return academicEventService.getEventsByBranch(branchId);
+    }
+
+    @GetMapping("/{id}")
+    public AcademicEvent getById(@PathVariable Long id) {
+        return academicEventService.getEventById(id);
     }
 
     @GetMapping
-    public java.util.List<AcademicEvent> getAll() {
-        return eventService.getAllEvents();
+    public List<AcademicEvent> getAll() {
+        return academicEventService.getAllEvents();
     }
 }

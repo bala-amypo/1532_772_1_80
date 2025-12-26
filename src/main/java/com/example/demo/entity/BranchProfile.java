@@ -11,10 +11,15 @@ public class BranchProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String branchCode;
+
     private String branchName;
+
     private String contactEmail;
+
     private LocalDateTime lastSyncAt;
+
     private Boolean active;
 
     public BranchProfile() {}
@@ -32,9 +37,12 @@ public class BranchProfile {
     @PrePersist
     public void prePersist() {
         this.lastSyncAt = LocalDateTime.now();
-        if (this.active == null) this.active = true;
+        if (this.active == null) {
+            this.active = true;
+        }
     }
 
+    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

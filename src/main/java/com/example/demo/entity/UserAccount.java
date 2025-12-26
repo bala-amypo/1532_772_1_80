@@ -12,10 +12,16 @@ public class UserAccount {
     private Long id;
 
     private String fullName;
+
+    @Column(unique = true)
     private String email;
+
     private String password;
+
     private String role;
+
     private String department;
+
     private LocalDateTime createdAt;
 
     public UserAccount() {}
@@ -39,8 +45,7 @@ public class UserAccount {
         }
     }
 
-    // Getters & setters (TESTS REQUIRE ALL)
-
+    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

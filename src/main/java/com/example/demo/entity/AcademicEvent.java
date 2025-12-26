@@ -13,20 +13,26 @@ public class AcademicEvent {
     private Long id;
 
     private Long branchId;
+
     private String title;
+
     private String eventType;
+
     private LocalDate startDate;
+
     private LocalDate endDate;
+
     private String location;
+
     private String description;
+
     private LocalDateTime submittedAt;
 
     public AcademicEvent() {}
 
     public AcademicEvent(Long id, Long branchId, String title, String eventType,
                          LocalDate startDate, LocalDate endDate,
-                         String location, String description,
-                         LocalDateTime submittedAt) {
+                         String location, String description, LocalDateTime submittedAt) {
         this.id = id;
         this.branchId = branchId;
         this.title = title;
@@ -43,8 +49,7 @@ public class AcademicEvent {
         this.submittedAt = LocalDateTime.now();
     }
 
-    // ---------- GETTERS & SETTERS ----------
-
+    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -62,12 +67,4 @@ public class AcademicEvent {
 
     public LocalDate getEndDate() { return endDate; }
     public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
-
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public LocalDateTime getSubmittedAt() { return submittedAt; }
 }
