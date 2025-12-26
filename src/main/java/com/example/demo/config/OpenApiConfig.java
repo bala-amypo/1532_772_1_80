@@ -11,24 +11,25 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    public OpenAPI openAPI() {
+
+        final String securitySchemeName = "bearerAuth";
 
         return new OpenAPI()
                 .info(new Info()
                         .title("Multi-Branch Academic Calendar Harmonizer")
-                        .version("1.0")
-                        .description("Centralized academic calendar management system"))
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-                .components(
-                        new io.swagger.v3.oas.models.Components()
-                                .addSecuritySchemes(
-                                        "bearerAuth",
-                                        new SecurityScheme()
-                                                .name("bearerAuth")
-                                                .type(SecurityScheme.Type.HTTP)
-                                                .scheme("bearer")
-                                                .bearerFormat("JWT")
-                                )
+                        .description("System for harmonizing academic calendars across multiple branches")
+                        .version("1.0.0")
+                )
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .components(new io.swagger.v3.oas.models.Components()
+                        .addSecuritySchemes(securitySchemeName,
+                                new SecurityScheme()
+                                        .name(securitySchemeName)
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")
+                        )
                 );
     }
 }
