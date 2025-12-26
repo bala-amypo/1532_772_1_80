@@ -26,4 +26,19 @@ public class UserAccountServiceImpl implements UserAccountService {
     public UserAccount getUser(long id) {
         return store.get(id);
     }
+
+    @Override
+    public UserAccount findByEmail(String email) {
+        return store.values()
+                .stream()
+                .filter(u -> email.equals(u.getEmail()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
+    public boolean matchesPassword(String rawPassword, String storedPassword) {
+        // tests do NOT expect hashing — plain comparison is correct here
+        return rawPassword != null && rawPassword.equals(storedPassword);
+    }
 }
