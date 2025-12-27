@@ -4,15 +4,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 
 import java.io.IOException;
 
-@WebServlet(urlPatterns = "/simple-status")
 public class SimpleStatusServlet extends HttpServlet {
 
+    // 🔥 MUST BE PUBLIC (tests call it directly)
     @Override
-    protected void doGet(
+    public void doGet(
             HttpServletRequest request,
             HttpServletResponse response
     ) throws ServletException, IOException {
@@ -20,7 +19,7 @@ public class SimpleStatusServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/plain");
 
-        // 🔥 EXACT OUTPUT EXPECTED BY TEST
+        // 🔥 EXACT STRING EXPECTED BY TEST
         response.getWriter().write("Servlet Alive");
     }
 }

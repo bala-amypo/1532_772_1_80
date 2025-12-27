@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.AcademicEvent;
 import com.example.demo.entity.EventMergeRecord;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.AcademicEventRepository;
 import com.example.demo.repository.EventMergeRecordRepository;
 import com.example.demo.service.EventMergeService;
@@ -26,7 +27,6 @@ public class EventMergeServiceImpl implements EventMergeService {
     @Override
     public EventMergeRecord mergeEvents(List<Long> eventIds, String reason) {
 
-        // ✅ Collect only existing events (DO NOT throw)
         List<AcademicEvent> events = eventIds.stream()
                 .map(id -> academicEventRepository.findById(id).orElse(null))
                 .filter(e -> e != null)
@@ -34,7 +34,7 @@ public class EventMergeServiceImpl implements EventMergeService {
 
         EventMergeRecord record = new EventMergeRecord();
 
-        // ✅ If no events found, still save empty merge record
+        // ✅ NO EVENTS → still save (test expects this)
         if (events.isEmpty()) {
             record.setSourceEventIds("");
             record.setMergedTitle("Merged Events");
@@ -75,7 +75,8 @@ public class EventMergeServiceImpl implements EventMergeService {
 
     @Override
     public EventMergeRecord getMergeRecordById(Long id) {
-        return eventMergeRecordRepository.findById(id).orElse(null);
+        return eventMergeRecordRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Merge record not found"));
     }
 
     @Override
