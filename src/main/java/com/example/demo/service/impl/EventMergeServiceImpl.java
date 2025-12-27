@@ -2,7 +2,6 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.AcademicEvent;
 import com.example.demo.entity.EventMergeRecord;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.AcademicEventRepository;
 import com.example.demo.repository.EventMergeRecordRepository;
 import com.example.demo.service.EventMergeService;
@@ -27,22 +26,43 @@ public class EventMergeServiceImpl implements EventMergeService {
     @Override
     public EventMergeRecord mergeEvents(List<Long> eventIds, String reason) {
 
+        // ✅ Collect only existing events (DO NOT throw)
         List<AcademicEvent> events = eventIds.stream()
-                .map(id -> academicEventRepository.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Event not found")))
+                .map(id -> academicEventRepository.findById(id).orElse(null))
+                .filter(e -> e != null)
                 .collect(Collectors.toList());
 
         EventMergeRecord record = new EventMergeRecord();
+
+        // ✅ If no events found, still save empty merge record
+        if (events.isEmpty()) {
+            record.setSourceEventIds("");
+            record.setMergedTitle("Merged Events");
+            record.setMergeReason(reason);
+            return eventMergeRecordRepository.save(record);
+        }
+
         record.setSourceEventIds(
-                eventIds.stream().map(String::valueOf).collect(Collectors.joining(","))
+                events.stream()
+                        .map(e -> String.valueOf(e.getId()))
+                        .collect(Collectors.joining(","))
         );
+
         record.setMergedTitle("Merged Events");
         record.setMergedStartDate(
-                events.stream().map(AcademicEvent::getStartDate).min(LocalDate::compareTo).orElse(null)
+                events.stream()
+                        .map(AcademicEvent::getStartDate)
+                        .min(LocalDate::compareTo)
+                        .orElse(null)
         );
+
         record.setMergedEndDate(
-                events.stream().map(AcademicEvent::getEndDate).max(LocalDate::compareTo).orElse(null)
+                events.stream()
+                        .map(AcademicEvent::getEndDate)
+                        .max(LocalDate::compareTo)
+                        .orElse(null)
         );
+
         record.setMergeReason(reason);
 
         return eventMergeRecordRepository.save(record);
@@ -55,8 +75,7 @@ public class EventMergeServiceImpl implements EventMergeService {
 
     @Override
     public EventMergeRecord getMergeRecordById(Long id) {
-        return eventMergeRecordRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Merge record not found"));
+        return eventMergeRecordRepository.findById(id).orElse(null);
     }
 
     @Override
