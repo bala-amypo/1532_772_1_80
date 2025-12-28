@@ -1,17 +1,16 @@
-package com.example.demo.config;
+package com.example.demo.security;
 
-import com.example.demo.security.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -22,35 +21,49 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader("Authorization");
 
+        String jwt = null;
+        String username = null;
+
+        // 🔍 Extract token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-
+            jwt = authHeader.substring(7);
             try {
-                JwtUtil.JwtPayload payload = jwtUtil.parseToken(token);
+                username = jwtUtil.extractUsername(jwt);
+            } catch (Exception e) {
+                // Invalid token → continue without auth
+            }
+        }
 
-                String username = payload.getPayload().getSubject();
-                String role = payload.getPayload().get("role", String.class);
+        // 🔐 Set authentication
+        if (username != null &&
+                SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                UsernamePasswordAuthenticationToken authentication =
+            UserDetails userDetails = jwtUtil.loadUserByUsername(username);
+
+            if (jwtUtil.validateToken(jwt, userDetails)) {
+
+                UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
-                                username,
+                                userDetails,
                                 null,
-                                Collections.singletonList(
-                                        new SimpleGrantedAuthority("ROLE_" + role)
-                                )
+                                userDetails.getAuthorities()
                         );
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                authToken.setDetails(
+                        new WebAuthenticationDetailsSource()
+                                .buildDetails(request)
+                );
 
-            } catch (Exception ex) {
-                SecurityContextHolder.clearContext();
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authToken);
             }
         }
 
