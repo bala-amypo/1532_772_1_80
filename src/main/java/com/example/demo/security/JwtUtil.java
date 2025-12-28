@@ -1,12 +1,11 @@
-package com.example.demo.security;
+
+     package com.example.demo.security;
 
 import com.example.demo.entity.UserAccount;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,81 +13,74 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private Key key;
-    private static final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private SecretKey key;
+    private final long expirationMillis = 3600000;
 
-    @PostConstruct
     public void initKey() {
-        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        if (this.key == null) {
+            // New syntax for 0.12.6
+            this.key = Jwts.SIG.HS256.key().build();
+        }
     }
 
-    // --------------------------------------------------
-    // TOKEN GENERATION
-    // --------------------------------------------------
+    public String generateTokenForUser(UserAccount user) {
+        initKey();
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRole());
+        return createToken(claims, user.getEmail());
+    }
+
+
     public String generateToken(Map<String, Object> claims, String subject) {
+        initKey();
+        return createToken(claims, subject);
+    }
+
+    private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .claims(claims)
+                .subject(subject)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expirationMillis))
                 .signWith(key)
                 .compact();
     }
 
-    public String generateTokenForUser(UserAccount user) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("email", user.getEmail());
-        claims.put("role", user.getRole());
-        claims.put("userId", user.getId());
-
-        return generateToken(claims, user.getEmail());
+    public boolean isTokenValid(String token, String email) {
+        try {
+            final String username = extractUsername(token);
+            return (username.equals(email) && !isTokenExpired(token));
+        } catch (JwtException e) { return false; }
     }
 
-    // --------------------------------------------------
-    // 🔥 TEST-COMPATIBLE TOKEN PARSER
-    // --------------------------------------------------
-    public JwtPayload parseToken(String token) {
-        Jws<Claims> jws = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token);
-
-        return new JwtPayload(jws);
-    }
-
-    // --------------------------------------------------
-    // HELPERS USED BY TESTS
-    // --------------------------------------------------
     public String extractUsername(String token) {
-        return parseToken(token).getPayload().getSubject();
-    }
-
-    public String extractRole(String token) {
-        return parseToken(token).getPayload().get("role", String.class);
+        return extractAllClaims(token).getSubject();
     }
 
     public Long extractUserId(String token) {
-        return parseToken(token).getPayload().get("userId", Long.class);
+        Number userId = (Number) extractAllClaims(token).get("userId");
+        return userId != null ? userId.longValue() : null;
     }
 
-    public boolean isTokenValid(String token, String username) {
-        return extractUsername(token).equals(username);
+    public String extractRole(String token) {
+        return (String) extractAllClaims(token).get("role");
     }
 
-    // ==================================================
-    // ✅ STATIC INNER CLASS (NO NEW FILE)
-    // ==================================================
-    public static class JwtPayload {
+    private boolean isTokenExpired(String token) {
+        return extractAllClaims(token).getExpiration().before(new Date());
+    }
 
-        private final Jws<Claims> jws;
+    public Jws<Claims> parseToken(String token) {
+        initKey();
+       
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
+    }
 
-        public JwtPayload(Jws<Claims> jws) {
-            this.jws = jws;
-        }
-
-        // 🔥 THIS MAKES THE TEST PASS
-        public Claims getPayload() {
-            return jws.getBody();
-        }
+    private Claims extractAllClaims(String token) {
+       
+        return parseToken(token).getPayload();
     }
 }
+
