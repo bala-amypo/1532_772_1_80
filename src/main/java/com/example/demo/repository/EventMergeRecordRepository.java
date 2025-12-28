@@ -6,11 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface EventMergeRecordRepository
-        extends JpaRepository<EventMergeRecord, Long> {
-
-    List<EventMergeRecord> findByCreatedAtBetween(
-            LocalDate startDate,
-            LocalDate endDate
-    );
+public interface EventMergeRecordRepository extends JpaRepository<EventMergeRecord, Long> {
+    List<EventMergeRecord> findByMergedStartDateBetween(LocalDate start, LocalDate end);
 }
