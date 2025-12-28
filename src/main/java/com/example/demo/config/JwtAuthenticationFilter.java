@@ -17,44 +17,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
-        public JwtAuthenticationFilter(JwtUtil jwtUtil) {
-                this.jwtUtil = jwtUtil;
-                    }
+    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
-                        @Override
-                            protected void doFilterInternal(HttpServletRequest request,
-                                                                HttpServletResponse response,
-                                                                                                    FilterChain filterChain)
-                                                                                                                throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
-                                                                                                                        String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-                                                                                                                                if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                                                                                                                                            String token = authHeader.substring(7);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
 
-                                                                                                                                                        try {
-                                                                                                                                                                        JwtUtil.JwtPayload payload = jwtUtil.parseToken(token);
+            try {
+                JwtUtil.JwtPayload payload = jwtUtil.parseToken(token);
 
-                                                                                                                                                                                        String username = payload.getPayload().getSubject();
-                                                                                                                                                                                                        String role = payload.getPayload().get("role", String.class);
+                String username = payload.getPayload().getSubject();
+                String role = payload.getPayload().get("role", String.class);
 
-                                                                                                                                                                                                                        UsernamePasswordAuthenticationToken authentication =
-                                                                                                                                                                                                                                                new UsernamePasswordAuthenticationToken(
-                                                                                                                                                                                                                                                                                username,
-                                                                                                                                                                                                                                                                                                                null,
-                                                                                                                                                                                                                                                                                                                                                Collections.singletonList(
-                                                                                                                                                                                                                                                                                                                                                                                        new SimpleGrantedAuthority("ROLE_" + role)
-                                                                                                                                                                                                                                                                                                                                                                                                                        )
-                                                                                                                                                                                                                                                                                                                                                                                                                                                );
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                username,
+                                null,
+                                Collections.singletonList(
+                                        new SimpleGrantedAuthority("ROLE_" + role)
+                                )
+                        );
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            } catch (Exception ex) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            SecurityContextHolder.clearContext();
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+            } catch (Exception e) {
+                SecurityContextHolder.clearContext();
+            }
+        }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        filterChain.doFilter(request, response);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+        filterChain.doFilter(request, response);
+    }
+}

@@ -28,6 +28,7 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
+    // ✅ REGISTER
     @PostMapping("/register")
     public ResponseEntity<UserAccount> register(@RequestBody RegisterRequest request) {
 
@@ -41,10 +42,10 @@ public class AuthController {
                 null
         );
 
-        UserAccount created = userAccountService.register(user);
-        return ResponseEntity.ok(created);
+        return ResponseEntity.ok(userAccountService.register(user));
     }
 
+    // ✅ LOGIN
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
 
@@ -57,7 +58,6 @@ public class AuthController {
 
         UserAccount user = userAccountService.getUserByEmail(request.getEmail());
 
-        // ✅ CORRECT TOKEN GENERATION
         String token = jwtUtil.generateTokenForUser(user);
 
         return ResponseEntity.ok(Map.of("token", token));
