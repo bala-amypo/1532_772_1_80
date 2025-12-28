@@ -16,21 +16,21 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() {
 
-        // 🔐 Security Scheme (JWT)
+        // JWT Security Scheme
         SecurityScheme securityScheme = new SecurityScheme()
                 .name("Authorization")
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("JWT");
 
-        // 🔐 Apply globally
+        // Apply globally
         SecurityRequirement securityRequirement =
                 new SecurityRequirement().addList("bearerAuth");
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("Academic Calendar API")
-                        .description("JWT Secured APIs")
+                        .title("Academic Calendar Management API")
+                        .description("JWT Secured REST APIs")
                         .version("1.0"))
                 .addSecurityItem(securityRequirement)
                 .components(
@@ -38,7 +38,7 @@ public class OpenApiConfig {
                                 .addSecuritySchemes("bearerAuth", securityScheme)
                 )
                 .servers(List.of(
-                        new Server().url("http://localhost:9001")
+                        new Server().url("https://9056.pro604cr.amypo.ai")
                 ));
     }
 }
