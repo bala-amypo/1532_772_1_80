@@ -1,4 +1,3 @@
-
     package com.example.demo.controller;
 
 import com.example.demo.dto.ApiResponse;
@@ -79,5 +78,3 @@ public class UserAccountController {
         return ResponseEntity.ok(new ApiResponse(true, "User fetched", userAccountService.getUser(id)));
     }
 }
-
-
