@@ -1,6 +1,5 @@
 package com.example.demo.config;
 
-import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,10 +43,10 @@ public class SecurityConfig {
                     sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers(
-                            "/api/auth/**",      // ✅ FIXED
+                            "/auth/**",
                             "/swagger-ui/**",
                             "/v3/api-docs/**",
-                            "/swagger-ui.html"
+                            "/simple-status"
                     ).permitAll()
                     .anyRequest().authenticated()
             )
