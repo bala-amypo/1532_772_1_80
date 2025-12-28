@@ -6,8 +6,6 @@ import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +16,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "Authentication")
 public class UserAccountController {
 
     private final UserAccountService userAccountService;
@@ -34,7 +31,6 @@ public class UserAccountController {
     }
 
     @PostMapping("/register")
-    @Operation(summary = "Register new user")
     public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest request) {
 
         UserAccount user = new UserAccount();
@@ -53,7 +49,6 @@ public class UserAccountController {
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Login user")
     public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest request) {
 
         UserAccount user = userAccountService.findByEmail(request.getEmail());
@@ -72,19 +67,5 @@ public class UserAccountController {
         data.put("user", user);
 
         return ResponseEntity.ok(new ApiResponse(true, "Login successful", data));
-    }
-
-    @GetMapping("/users")
-    public ResponseEntity<ApiResponse> getAllUsers() {
-        return ResponseEntity.ok(
-                new ApiResponse(true, "Users fetched", userAccountService.getAllUsers())
-        );
-    }
-
-    @GetMapping("/users/{id}")
-    public ResponseEntity<ApiResponse> getUser(@PathVariable Long id) {
-        return ResponseEntity.ok(
-                new ApiResponse(true, "User fetched", userAccountService.getUser(id))
-        );
     }
 }
