@@ -68,6 +68,11 @@ public class EventMergeServiceImpl implements EventMergeService {
     }
 
     @Override
+    public EventMergeRecord getMergeRecordById(Long id) {
+        return mergeRepo.findById(id).orElse(null);
+    }
+
+    @Override
     public List<EventMergeRecord> getMergeRecordsByDate(
             LocalDate startDate,
             LocalDate endDate
