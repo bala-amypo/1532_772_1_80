@@ -16,21 +16,21 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() {
 
-        // JWT Security Scheme
+        // 🔐 JWT Security Scheme
         SecurityScheme securityScheme = new SecurityScheme()
                 .name("Authorization")
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("JWT");
 
-        // Apply globally
+        // 🔐 Apply JWT globally
         SecurityRequirement securityRequirement =
                 new SecurityRequirement().addList("bearerAuth");
 
         return new OpenAPI()
                 .info(new Info()
                         .title("Academic Calendar Management API")
-                        .description("JWT Secured REST APIs")
+                        .description("Secure REST API with JWT Authentication")
                         .version("1.0"))
                 .addSecurityItem(securityRequirement)
                 .components(
