@@ -79,4 +79,9 @@ public class EventMergeServiceImpl implements EventMergeService {
     ) {
         return mergeRepo.findByCreatedAtBetween(startDate, endDate);
     }
+
+    @Override
+    public List<EventMergeRecord> getAllMergeRecords() {
+        return mergeRepo.findAll();
+    }
 }
