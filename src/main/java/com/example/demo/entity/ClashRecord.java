@@ -1,4 +1,5 @@
-package com.example.demo.entity;
+
+    package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -21,10 +22,7 @@ public class ClashRecord {
 
     public ClashRecord() {}
 
-    public ClashRecord(Long id, Long eventAId, Long eventBId,
-                       String clashType, String severity,
-                       String details, LocalDateTime detectedAt,
-                       Boolean resolved) {
+    public ClashRecord(Long id, Long eventAId, Long eventBId, String clashType, String severity, String details, LocalDateTime detectedAt, Boolean resolved) {
         this.id = id;
         this.eventAId = eventAId;
         this.eventBId = eventBId;
@@ -43,22 +41,22 @@ public class ClashRecord {
         }
     }
 
-    // ===== GETTERS =====
+  
     public Long getId() { return id; }
-    public Long getEventAId() { return eventAId; }
-    public Long getEventBId() { return eventBId; }
-    public String getClashType() { return clashType; }
-    public String getSeverity() { return severity; }
-    public String getDetails() { return details; }
-    public LocalDateTime getDetectedAt() { return detectedAt; }
-    public Boolean getResolved() { return resolved; }
-
-    // ===== SETTERS =====
     public void setId(Long id) { this.id = id; }
+    public Long getEventAId() { return eventAId; }
     public void setEventAId(Long eventAId) { this.eventAId = eventAId; }
+    public Long getEventBId() { return eventBId; }
     public void setEventBId(Long eventBId) { this.eventBId = eventBId; }
+    public String getClashType() { return clashType; }
     public void setClashType(String clashType) { this.clashType = clashType; }
+    public String getSeverity() { return severity; }
     public void setSeverity(String severity) { this.severity = severity; }
+    public String getDetails() { return details; }
     public void setDetails(String details) { this.details = details; }
+    public LocalDateTime getDetectedAt() { return detectedAt; }
+    public void setDetectedAt(LocalDateTime detectedAt) { this.detectedAt = detectedAt; }
+    public Boolean getResolved() { return resolved; }
     public void setResolved(Boolean resolved) { this.resolved = resolved; }
 }
+
