@@ -29,14 +29,13 @@ public class EventMergeServiceImpl implements EventMergeService {
     public EventMergeRecord mergeEvents(List<Long> eventIds, String reason) {
 
         if (eventIds == null || eventIds.isEmpty()) {
-            return null; // ✅ required for t82
+            return null;
         }
 
-        List<AcademicEvent> events =
-                eventRepo.findAllById(eventIds);
+        List<AcademicEvent> events = eventRepo.findAllById(eventIds);
 
         if (events.isEmpty()) {
-            return null; // ✅ required for t82
+            return null;
         }
 
         EventMergeRecord record = new EventMergeRecord();
@@ -47,9 +46,7 @@ public class EventMergeServiceImpl implements EventMergeService {
                         .collect(Collectors.joining(","))
         );
 
-        record.setMergedTitle(
-                events.get(0).getTitle()
-        );
+        record.setMergedTitle(events.get(0).getTitle());
 
         record.setMergedStartDate(
                 events.stream()
@@ -67,6 +64,14 @@ public class EventMergeServiceImpl implements EventMergeService {
 
         record.setMergeReason(reason);
 
-        return mergeRepo.save(record); // ✅ required for t81
+        return mergeRepo.save(record);
+    }
+
+    @Override
+    public List<EventMergeRecord> getMergeRecordsByDate(
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        return mergeRepo.findByCreatedAtBetween(startDate, endDate);
     }
 }
