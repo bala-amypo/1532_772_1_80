@@ -16,12 +16,14 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() {
 
+        //  JWT Security Scheme
         SecurityScheme securityScheme = new SecurityScheme()
                 .name("Authorization")
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("JWT");
 
+        //  Apply JWT globally
         SecurityRequirement securityRequirement =
                 new SecurityRequirement().addList("bearerAuth");
 
